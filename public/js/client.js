@@ -1,3 +1,5 @@
+// CAC SU KIEN TU CLIENT
+
 // const ip_name = document.getElementById("name");
 const ip_room = document.getElementById("room");
 const ip_message = document.getElementById("ip_message");
@@ -49,9 +51,9 @@ btn_join.addEventListener("click", () => {
 //Ham gui tin nhan den server
 const sendMessage = () => {
   const message = ip_message.value;
-  if (!message) {
-    return;
-  }
+  // if (!message) {
+  //   return;
+  // }
 
   //Lay ID cho tin nhan de tha emotion chinh xac tin nhan
   let id = "";
@@ -59,14 +61,44 @@ const sendMessage = () => {
     id += Math.floor(Math.random() * 10);
   }
 
-  const obj = {
-    id: +id, // +: chuyen ID tu chuoi thanh so
-    name: my_name,
-    message: message,
-  };
-  socket.emit("message", JSON.stringify(obj));
-  ip_message.value = "";
-  ip_message.focus();
+  if (ip_image?.files[0]) {
+    const formData = new FormData();
+    formData.append("img", ip_image.files[0]);
+    fetch("/api/uploads", {
+      method: "POST",
+      body: formData,
+      // headers: {
+      //   'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
+      //   "Content-Type": "multipart/form-data",
+      // },
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        const obj = {
+          id: +id, // +: chuyen ID tu chuoi thanh so
+          name: my_name,
+          message: json.url,
+        };
+
+        //Gui tin nhan len Server
+        socket.emit("message", JSON.stringify(obj));
+        img_message.style.display = "none";
+      })
+      .catch((error) => {
+        console.log("Error API");
+      });
+  } else {
+    const obj = {
+      id: +id, // +: chuyen ID tu chuoi thanh so
+      name: my_name,
+      message: message,
+    };
+
+    //Gui tin nhan len Server
+    socket.emit("message", JSON.stringify(obj));
+    ip_message.value = "";
+    ip_message.focus();
+  }
 };
 
 //Gui tin nhan bang nut Send
@@ -85,10 +117,16 @@ socket.on("thread", function (data) {
   const li = document.createElement("li");
   li.innerHTML = `
   <span id="${obj.id}">
-  <p>${obj.message}</p>
+  <p>${
+    obj.message.startsWith("https")
+      ? '<img style="width: 200px; background-color: none" src="' + obj.message + '">'
+      : obj.message
+  }</p>
   <i></i>
   </span>
-   <i onclick="show(event, ${obj.id})" class="choose_emotion fa-solid fa-face-smile" style="color: white"></i>
+   <i onclick="show(event, ${
+     obj.id
+   })" class="choose_emotion fa-solid fa-face-smile" style="color: white"></i>
   `;
   if (obj.name === my_name) {
     li.classList.add("right");
@@ -165,3 +203,12 @@ socket.on("emotion", (data) => {
 //     });
 //   }
 // }
+
+//Gui hinh anh
+const ip_image = document.getElementById("ip_image");
+const img_message = document.getElementById("img_message");
+
+ip_image.addEventListener("change", () => {
+  img_message.src = URL.createObjectURL(ip_image.files[0]);
+  img_message.style.display = "block";
+});

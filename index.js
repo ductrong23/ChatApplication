@@ -1,3 +1,5 @@
+// SERVER XU LY va TRA LAI CAC SU KIEN TU CLIENT
+
 const express = require("express");
 const app = express();
 const http = require("http");
