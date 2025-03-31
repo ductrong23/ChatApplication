@@ -21,8 +21,13 @@ io.on("connection", function (client) {
     room = data.room;
     client.join(room);
   });
+  //Xu ly tin nhan nhan duoc tu Client => Gui lai phong chat
   client.on("message", function (data) {
     io.to(room).emit("thread", data);
+  });
+  //Xu ly emotion nhan duoc tu Client => Gui lai phong chat
+  client.on("emotion", function (data) {
+    io.to(room).emit("emotion", data);
   });
 });
 

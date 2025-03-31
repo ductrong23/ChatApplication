@@ -61,10 +61,14 @@ body {
 #ul_message li {
   display: flex;
   align-items: center;
-  margin-top: 7px;
+  margin-top: 9px;
 }
 
-#ul_message li span {
+#ul_message li span{
+  position: relative;
+}
+
+#ul_message li span p {
   width: fit-content;
   background-image: linear-gradient(
     to right,
@@ -133,7 +137,7 @@ body {
 }
 
 .emotions {
-  background-color: grey;
+  background-color: rgb(250, 233, 233);
   padding: 5px;
   border-radius: 15px;
   position: absolute;
