@@ -1,59 +1,62 @@
 <!-- GIAO DIEN LOGIN - REGISTER -->
 
-<form onsubmit="return false;">
-  <caption>
-    <h1>Login</h1>
-  </caption>
-  <input
-    type="text"
-    name="username"
-    id="ip_username"
-    placeholder="Username..."
-  />
-  <br />
-  <input
-    type="password"
-    name="password"
-    id="ip_password"
-    placeholder="Password..."
-  />
-  <button id="btn_login">Login</button>
-</form>
+<link rel="stylesheet" href="css/style.css" />
 
-<form onsubmit="return false;">
-  <caption>
-    <h1>Register</h1>
-  </caption>
-  <input
-    type="text"
-    name="username"
-    id="ip_username2"
-    placeholder="Username..."
-  />
-  <br />
-  <input
-    type="password"
-    name="password"
-    id="ip_password2"
-    placeholder="Password..."
-  />
-  <br />
-  <input
-    type="password"
-    name="password"
-    id="ip_password22"
-    placeholder="Re-Enter Password..."
-  />
-  <input
-    type="text"
-    name="full_name"
-    id="ip_full_name"
-    placeholder="Fullname..."
-  />
-  <br />
-  <button id="btn_register">Register</button>
-</form>
+<div class="login-register">
+  <form onsubmit="return false;" class="login">
+    <caption>
+      <h1>Login</h1>
+    </caption>
+    <input
+      type="text"
+      name="username"
+      id="ip_username"
+      placeholder="Username..."
+    />
+    <br />
+    <input
+      type="password"
+      name="password"
+      id="ip_password"
+      placeholder="Password..."
+    />
+    <button id="btn_login">Login</button>
+  </form>
 
+  <form onsubmit="return false;" class="register">
+    <caption>
+      <h1>Register</h1>
+    </caption>
+    <input
+      type="text"
+      name="username"
+      id="ip_username2"
+      placeholder="Username..."
+    />
+    <br />
+    <input
+      type="password"
+      name="password"
+      id="ip_password2"
+      placeholder="Password..."
+    />
+    <br />
+    <input
+      type="password"
+      name="password"
+      id="ip_password22"
+      placeholder="Re-Enter Password..."
+    />
+    <input
+      type="text"
+      name="full_name"
+      id="ip_full_name"
+      placeholder="Fullname..."
+    />
+    <br />
+    <button id="btn_register">Register</button>
+  </form>
+</div>
 <script>
   //Dang nhap
   const btn_login = document.getElementById("btn_login");

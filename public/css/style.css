@@ -1,155 +1,60 @@
-body,
-* {
-  margin: 0;
-  padding: 0;
-}
 
-body {
-  background-color: aquamarine;
-}
-
-.container {
-  width: 70%;
-  height: 98.5vh;
-  margin: 0 auto;
-  box-sizing: border-box;
-  /* background-color: azure; */
-  background-color: #1c1e21;
-}
-
-.container_join {
-  width: 100%;
-  height: 5%;
+/* ======================LOGIN - REGISTER========================= */
+/* Định dạng chung cho khung login-register */
+.login-register {
   display: flex;
-}
-
-.container_join input {
-  width: 80%;
-  padding: 10px;
-}
-
-.container_join button {
-  width: 20%;
-  padding: 10px;
-}
-
-.container_send {
-  width: 100%;
-  height: 5%;
-  display: flex;
-}
-
-#ip_message {
-  width: 80%;
-  padding: 10px;
-}
-
-#btn_send {
-  width: 20%;
-  padding: 10px;
-}
-
-#ul_message {
-  list-style: none;
-  width: 100%;
-  height: 90%;
-  overflow: scroll;
-  width: calc(100% - 10px); /* Giảm 10px để trừ đi 5px mỗi bên */
-  padding: 5px; /* Thêm padding để các tin nhắn không sát lề */
-}
-
-#ul_message li {
-  display: flex;
+  justify-content: space-around;
   align-items: center;
-  margin-top: 9px;
-}
-
-#ul_message li span{
-  position: relative;
-}
-
-#ul_message li span p {
-  width: fit-content;
-  background-image: linear-gradient(
-    to right,
-    rgb(204, 0, 255),
-    rgb(220, 110, 235)
-  );
-  /* margin-top: 5px; */
-  padding: 8px;
-  color: white;
-  border-radius: 15px;
-  float: left;
-  clear: both;
-  margin-left: 5px; /* Cách lề trái 5px */
-  margin-right: 5px; /* Cách lề phải 5px */
-}
-
-.right {
-  /* float: right !important; */
-  flex-direction: row-reverse;
-  /* background-image: linear-gradient(to right, blue, purple); */
-  margin-left: 5px; /* Cách lề trái 5px */
-  margin-right: 5px; /* Cách lề phải 5px */
-}
-
-.right .choose_emotion .emotions{
-  right: 30px;
-}
-
-/* LIST USER CSS */
-.list_user {
-  width: 30%;
-  list-style: none;
+  width: 650px;
+  margin: 0 auto;
   padding: 20px;
-  /* background-color: azure; */
-  background-color: #1c1e21;
-  height: 100vh;
-  overflow: scroll;
-  box-sizing: border-box;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.list_user li {
-  background-color: beige;
-  border-radius: 15px;
+/* Định dạng chung cho form */
+.login-register form {
+  width: 300px;
+  text-align: center;
+  padding: 20px;
+}
+
+h1 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.login-register input {
+  width: 100%;
   padding: 10px;
-  margin-bottom: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
 }
 
-.list_user li div {
-  display: flex;
-}
-
-.choose_emotion {
-  /* visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.2s ease-in-out; */
-  margin: 0 5px;
-  display: none !important;
-  position: relative;
-}
-
-#ul_message li:hover .choose_emotion {
-  display: block !important;
+.login-register button {
+  width: 100%;
+  padding: 10px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
-  /* visibility: visible;
-  opacity: 1; */
+  font-size: 16px;
+  margin-top: 10px;
 }
 
-.emotions {
-  background-color: rgb(250, 233, 233);
-  padding: 5px;
-  border-radius: 15px;
-  position: absolute;
-  bottom: 20px;
-  display: flex;
+.login-register button:hover {
+  background: #218838;
 }
 
-.emotions i:hover{
-  transform: scale(1.5);
+/* Tách biệt Login và Register */
+.login-register .login {
+  border-top: 5px solid #007bff;
 }
 
-.emotions i{
-  margin: 5px;
-  transition: linear 0.2s;
+.login-register .register {
+  border-top: 5px solid #dc3545;
 }

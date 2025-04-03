@@ -14,6 +14,7 @@ var socket = io.connect();
 // let my_name = "";
 let my_name = localStorage.getItem("username");
 
+// ID cho tung emotion
 const emotions = [
   {
     id: 1,
@@ -40,66 +41,183 @@ socket.on("connect", function () {
   console.log("Connected to server!");
 });
 
-//Lay id phong ra der gui den server
-btn_join.addEventListener("click", () => {
-  // my_name = ip_name.value;
+// //Lay id phong ra der gui den server
+// btn_join.addEventListener("click", () => {
+//   // my_name = ip_name.value;
+//   const room = ip_room.value;
+//   socket.emit("join", room);
+//   alert(`Join room ${room} success`);
+
+// });
+
+// ==============
+btn_join.addEventListener("click", async () => {
   const room = ip_room.value;
-  socket.emit("join", room);
+  socket.emit("join", { room }); // Gửi room dưới dạng object
   alert(`Join room ${room} success`);
+
+  try {
+    // Lấy các tin nhắn cũ từ server
+    const response = await fetch(`/api/messages/${room}`);
+    const messages = await response.json();
+
+    // Xóa tin nhắn cũ nếu có
+    ul_message.innerHTML = "";
+
+    // Hiển thị các tin nhắn đã có
+    messages.forEach((msg) => {
+      const li = document.createElement("li");
+
+      // Kiểm tra nếu tin nhắn là URL hình ảnh
+      const messageContent = msg.message.startsWith("https")
+        ? `<img style="width: 200px; background-color: none" src="${msg.message}">`
+        : msg.message;
+
+      // Format thời gian
+      const time = new Date(msg.timestamp).toLocaleTimeString();
+
+      li.innerHTML = `
+        <span id="${msg._id}">
+          <p>${messageContent}</p>
+          <small style="color: gray; font-size: 12px; margin-top: 5px; display: block; text-align: right;">${time}</small>
+          <i></i>
+        </span>
+        <i onclick="show(event, ${msg._id})" class="choose_emotion fa-solid fa-face-smile" style="color: white"></i>
+      `;
+
+      // Thêm lớp "right" cho tin nhắn của người dùng
+      if (msg.sender === my_name) {
+        li.classList.add("right");
+      }
+
+      ul_message.appendChild(li);
+    });
+
+    // Cuộn xuống cuối danh sách tin nhắn
+    ul_message.scrollTop = ul_message.scrollHeight;
+  } catch (error) {
+    console.log("Error fetching messages:", error);
+  }
 });
 
-//Ham gui tin nhan den server
-const sendMessage = () => {
-  const message = ip_message.value;
-  // if (!message) {
-  //   return;
-  // }
+// ==============
 
-  //Lay ID cho tin nhan de tha emotion chinh xac tin nhan
+// //Ham gui tin nhan den server
+// const sendMessage =  () => {
+//   const message = ip_message.value;
+
+//   // if (!message) {
+//   //   return;
+//   // }
+
+//   //Lay ID cho tin nhan de tha emotion chinh xac tin nhan
+//   let id = "";
+//   for (let i = 0; i < 8; i++) {
+//     id += Math.floor(Math.random() * 10);
+//   }
+
+//   //Lay thoi gian gui tin nhan
+//   const timeSent = new Date().toLocaleTimeString();
+
+//   if (ip_image?.files[0]) {
+//     const formData = new FormData();
+//     formData.append("img", ip_image.files[0]);
+//     fetch("/api/uploads", {
+//       method: "POST",
+//       body: formData,
+//       // headers: {
+//       //   'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
+//       //   "Content-Type": "multipart/form-data",
+//       // },
+//     })
+//       .then((res) => res.json())
+//       .then((json) => {
+//         const obj = {
+//           id: +id, // +: chuyen ID tu chuoi thanh so
+//           name: my_name,
+//           message: json.url,
+//           time: timeSent, //Thoi gian gui
+//         };
+
+//         //Gui tin nhan len Server
+//         socket.emit("message", JSON.stringify(obj));
+
+//         img_message.style.display = "none";
+//       })
+//       .catch((error) => {
+//         console.log("Error API");
+//       });
+//   } else {
+//     const obj = {
+//       id: +id, // +: chuyen ID tu chuoi thanh so
+//       name: my_name,
+//       message: message,
+//       time: timeSent, //Thoi gian gui
+//     };
+
+//     //Gui tin nhan len Server
+//     socket.emit("message", JSON.stringify(obj));
+//     ip_message.value = "";
+//     ip_message.focus();
+//   }
+// };
+
+// ============
+// Hàm gửi tin nhắn đến Server
+const sendMessage = async () => {
+  const message = ip_message.value;
+  
+  // if (!message) return;
+
   let id = "";
   for (let i = 0; i < 8; i++) {
     id += Math.floor(Math.random() * 10);
   }
 
+  const timeSent = new Date().toLocaleTimeString();
+  const room = ip_room.value;
+
   if (ip_image?.files[0]) {
     const formData = new FormData();
     formData.append("img", ip_image.files[0]);
-    fetch("/api/uploads", {
-      method: "POST",
-      body: formData,
-      // headers: {
-      //   'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
-      //   "Content-Type": "multipart/form-data",
-      // },
-    })
-      .then((res) => res.json())
-      .then((json) => {
-        const obj = {
-          id: +id, // +: chuyen ID tu chuoi thanh so
-          name: my_name,
-          message: json.url,
-        };
 
-        //Gui tin nhan len Server
-        socket.emit("message", JSON.stringify(obj));
-        img_message.style.display = "none";
-      })
-      .catch((error) => {
-        console.log("Error API");
+    try {
+      const res = await fetch("/api/uploads", {
+        method: "POST",
+        body: formData,
       });
+      const json = await res.json();
+      const messageObj = {
+        id: +id,
+        name: my_name,
+        message: json.url,
+        time: timeSent,
+        room: room, // Thêm room để server có thông tin
+      };
+
+      // Chỉ gửi tin nhắn qua WebSocket
+      socket.emit("message", JSON.stringify(messageObj));
+      img_message.style.display = "none";
+    } catch (error) {
+      console.log("Error uploading image:", error);
+    }
   } else {
-    const obj = {
-      id: +id, // +: chuyen ID tu chuoi thanh so
+    const messageObj = {
+      id: +id,
       name: my_name,
       message: message,
+      time: timeSent,
+      room: room, // Thêm room để server có thông tin
     };
 
-    //Gui tin nhan len Server
-    socket.emit("message", JSON.stringify(obj));
+    // Chỉ gửi tin nhắn qua WebSocket, bỏ phần lưu qua API
+    socket.emit("message", JSON.stringify(messageObj));
     ip_message.value = "";
     ip_message.focus();
   }
 };
+
+// ============
 
 //Gui tin nhan bang nut Send
 btn_send.addEventListener("click", sendMessage);
@@ -111,30 +229,72 @@ ip_message.addEventListener("keydown", (event) => {
   }
 });
 
-//Nhan tin nhan tu server
+// //Nhan tin nhan tu server
+// socket.on("thread", function (data) {
+//   const obj = JSON.parse(data);
+//   const li = document.createElement("li");
+//   li.innerHTML = `
+//   <span id="${obj.id}">
+//   <p>${
+//     obj.message.startsWith("https")
+//       ? '<img style="width: 200px; background-color: none" src="' +
+//         obj.message +
+//         '">'
+//       : obj.message
+//   }</p>
+//    <small style="color: gray; font-size: 12px; margin-top: 5px; display: block; text-align: right;">${
+//      obj.time
+//    }</small> <!-- Hiển thị thời gian -->
+//   <i></i>
+//   </span>
+//    <i onclick="show(event, ${
+//      obj.id
+//    })" class="choose_emotion fa-solid fa-face-smile" style="color: white"></i>
+//   `;
+//   if (obj.name === my_name) {
+//     li.classList.add("right");
+//   }
+//   ul_message.appendChild(li);
+//   ul_message.scrollTop = ul_message.scrollHeight;
+//   // loadChooseEmotion();
+// });
+
+// =========
+// Nhận tin nhắn từ server
 socket.on("thread", function (data) {
   const obj = JSON.parse(data);
   const li = document.createElement("li");
+
+  // Kiểm tra nếu tin nhắn là URL hình ảnh
   li.innerHTML = `
-  <span id="${obj.id}">
-  <p>${
-    obj.message.startsWith("https")
-      ? '<img style="width: 200px; background-color: none" src="' + obj.message + '">'
-      : obj.message
-  }</p>
-  <i></i>
-  </span>
-   <i onclick="show(event, ${
-     obj.id
-   })" class="choose_emotion fa-solid fa-face-smile" style="color: white"></i>
+    <span id="${obj.id}">
+      <p>${
+        obj.message.startsWith("https")
+          ? '<img style="width: 200px; background-color: none" src="' +
+            obj.message +
+            '">'
+          : obj.message
+      }</p>
+      <small style="color: gray; font-size: 12px; margin-top: 5px; display: block; text-align: right;">${
+        obj.time
+      }</small> <!-- Hiển thị thời gian -->
+      <i></i>
+    </span>
+    <i onclick="show(event, ${
+      obj.id
+    })" class="choose_emotion fa-solid fa-face-smile" style="color: white"></i>
   `;
+
+  // Thêm lớp "right" cho tin nhắn của người dùng
   if (obj.name === my_name) {
     li.classList.add("right");
   }
+
   ul_message.appendChild(li);
-  ul_message.scrollTop = ul_message.scrollHeight;
-  // loadChooseEmotion();
+  ul_message.scrollTop = ul_message.scrollHeight; // Cuộn xuống cuối danh sách tin nhắn
 });
+
+// =========
 
 // Ham hien/an emotion khi click vao bieu tuong
 function show(e, id) {
@@ -154,11 +314,54 @@ function show(e, id) {
   }
 }
 
-//Ham hien emotion len tin nhan
+// //Ham hien emotion len tin nhan
+// function choose(e, id, id_emotion) {
+//   const span_message = document.getElementById(id + "");
+
+//   const emotion = e.target;
+//   emotion.style.position = "absolute";
+//   emotion.style.top = "23px";
+//   emotion.style.left = "5px";
+//   emotion.style.background = "gray";
+//   emotion.style.borderRadius = "50%";
+
+//   span_message.appendChild(emotion);
+
+//   //Gui emotion di len server => ben kia nhan duoc
+//   const obj = {
+//     id: id,
+//     emotion: id_emotion,
+//   };
+//   socket.emit("emotion", JSON.stringify(obj));
+// }
+
+// //Client nhan duoc emotion tu Server
+// socket.on("emotion", (data) => {
+//   // console.log(data);
+//   const obj = JSON.parse(data);
+//   const span_message = document.getElementById(obj.id + "");
+
+//   let emotion = emotions[obj.emotion - 1].emotion;
+//   const div = document.createElement("div");
+//   div.innerHTML = emotion;
+//   emotion = div.firstChild;
+
+//   emotion.style.position = "absolute";
+//   emotion.style.top = "23px";
+//   emotion.style.left = "5px";
+//   emotion.style.background = "gray";
+//   emotion.style.borderRadius = "50%";
+
+//   span_message.appendChild(emotion);
+// });
+
+// ==============
+// Khi người dùng chọn emotion
 function choose(e, id, id_emotion) {
   const span_message = document.getElementById(id + "");
-
   const emotion = e.target;
+
+  // Đặt style cho emotion
   emotion.style.position = "absolute";
   emotion.style.top = "23px";
   emotion.style.left = "5px";
@@ -167,7 +370,7 @@ function choose(e, id, id_emotion) {
 
   span_message.appendChild(emotion);
 
-  //Gui emotion di len server => ben kia nhan duoc
+  // Gửi emotion lên server
   const obj = {
     id: id,
     emotion: id_emotion,
@@ -175,9 +378,8 @@ function choose(e, id, id_emotion) {
   socket.emit("emotion", JSON.stringify(obj));
 }
 
-//Client nhan duoc emotion tu Server
+// Nhận emotion từ server và hiển thị
 socket.on("emotion", (data) => {
-  // console.log(data);
   const obj = JSON.parse(data);
   const span_message = document.getElementById(obj.id + "");
 
@@ -194,6 +396,8 @@ socket.on("emotion", (data) => {
 
   span_message.appendChild(emotion);
 });
+
+// ==============
 
 // function loadChooseEmotion() {
 //   const choose_emotion = document.getElementsByClassName("choose_emotion");

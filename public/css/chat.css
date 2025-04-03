@@ -1,0 +1,149 @@
+/* Định dạng chung cho giao diện phòng chat */
+.list_user {
+    width: 250px;
+    background: #f4f4f4;
+    padding: 15px;
+    border-radius: 5px;
+    list-style: none;
+  }
+  
+  .list_user li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .list_user li:last-child {
+    border-bottom: none;
+  }
+  
+  .container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 500px;
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-left: 20px;
+  }
+  
+  .container_join {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .container_join input {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .container_join button {
+    padding: 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  #ul_message {
+    flex: 1;
+    overflow-y: auto;
+    list-style: none;
+    padding: 10px;
+  }
+  
+  #ul_message li {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: #e9ecef;
+    border-radius: 10px;
+    margin: 5px 0;
+    width: fit-content;;
+  }
+  
+  /* #ul_message li.right {
+    background: #007bff;
+    color: white;
+    justify-content: flex-end;
+  }
+   */
+
+   #ul_message li.right {
+    margin-left: auto;
+    background: #007bff;
+    color: white;
+  }
+
+  .choose_emotion {
+    margin-left: 10px;
+    cursor: pointer;
+  }
+  
+  .container_send {
+    display: flex;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+  }
+  
+  .container_send input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .container_send button {
+    padding: 10px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+  }
+  
+
+
+  .choose_emotion {
+    /* visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out; */
+    margin: 0 5px;
+    display: none !important;
+    position: relative;
+  }
+  
+  #ul_message li:hover .choose_emotion {
+    display: block !important;
+    cursor: pointer;
+    /* visibility: visible;
+    opacity: 1; */
+  }
+  
+  .emotions {
+    background-color: rgb(250, 233, 233);
+    padding: 5px;
+    border-radius: 15px;
+    position: absolute;
+    bottom: 20px;
+    display: flex;
+  }
+  
+  .emotions i:hover{
+    transform: scale(1.5);
+  }
+
+  .emotions i{
+    margin: 5px;
+    transition: linear 0.2s;
+  }
+  

@@ -1,0 +1,155 @@
+body,
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: aquamarine;
+}
+
+.container {
+  width: 75%;
+  height: 98.5vh;
+  margin: 0 auto;
+  box-sizing: border-box;
+  /* background-color: azure; */
+  background-color: #1c1e21;
+}
+
+.container_join {
+  width: 100%;
+  height: 5%;
+  display: flex;
+}
+
+.container_join input {
+  width: 80%;
+  padding: 10px;
+}
+
+.container_join button {
+  width: 20%;
+  padding: 10px;
+}
+
+.container_send {
+  width: 100%;
+  height: 5%;
+  display: flex;
+}
+
+#ip_message {
+  width: 80%;
+  padding: 10px;
+}
+
+#btn_send {
+  width: 20%;
+  padding: 10px;
+}
+
+#ul_message {
+  list-style: none;
+  width: 100%;
+  height: 90%;
+  overflow: scroll;
+  width: calc(100% - 10px); /* Giảm 10px để trừ đi 5px mỗi bên */
+  padding: 5px; /* Thêm padding để các tin nhắn không sát lề */
+}
+
+#ul_message li {
+  display: flex;
+  align-items: center;
+  margin-top: 9px;
+}
+
+#ul_message li span{
+  position: relative;
+}
+
+#ul_message li span p {
+  width: fit-content;
+  background-image: linear-gradient(
+    to right,
+    rgb(204, 0, 255),
+    rgb(220, 110, 235)
+  );
+  /* margin-top: 5px; */
+  padding: 8px;
+  color: white;
+  border-radius: 15px;
+  float: left;
+  clear: both;
+  margin-left: 5px; /* Cách lề trái 5px */
+  margin-right: 5px; /* Cách lề phải 5px */
+}
+
+.right {
+  /* float: right !important; */
+  flex-direction: row-reverse;
+  /* background-image: linear-gradient(to right, blue, purple); */
+  margin-left: 5px; /* Cách lề trái 5px */
+  margin-right: 5px; /* Cách lề phải 5px */
+}
+
+.right .choose_emotion .emotions{
+  right: 30px;
+}
+
+/* =============================LIST USER CSS=============================== */
+.list_user {
+  width: 25%;
+  list-style: none;
+  padding: 20px;
+  /* background-color: azure; */
+  background-color: #1c1e21;
+  height: 100vh;
+  overflow: scroll;
+  box-sizing: border-box;
+}
+
+.list_user li {
+  background-color: beige;
+  border-radius: 15px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.list_user li div {
+  display: flex;
+}
+
+.choose_emotion {
+  /* visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out; */
+  margin: 0 5px;
+  display: none !important;
+  position: relative;
+}
+
+#ul_message li:hover .choose_emotion {
+  display: block !important;
+  cursor: pointer;
+  /* visibility: visible;
+  opacity: 1; */
+}
+
+.emotions {
+  background-color: rgb(250, 233, 233);
+  padding: 5px;
+  border-radius: 15px;
+  position: absolute;
+  bottom: 20px;
+  display: flex;
+}
+
+.emotions i:hover{
+  transform: scale(1.5);
+}
+
+.emotions i{
+  margin: 5px;
+  transition: linear 0.2s;
+}
