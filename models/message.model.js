@@ -23,10 +23,11 @@ const messageSchema = mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-    // emotion: {
-    //   type: String,
-    //   required: false,
-    // },
+    emotion: {
+      type: Number, // Lưu ID của emotion (1, 2, 3, 4)
+      required: false, // Không bắt buộc vì không phải tin nhắn nào cũng có emotion
+      default: null, // Giá trị mặc định là null nếu không có emotion
+    },
   },
   {
     versionKey: false,

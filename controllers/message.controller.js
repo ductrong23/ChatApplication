@@ -10,7 +10,7 @@ module.exports = {
         room,
         sender,
         message,
-        // emotion,
+        emotion,
       });
 
       // Trả về tin nhắn đã lưu

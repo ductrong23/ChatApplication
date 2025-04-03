@@ -26,31 +26,16 @@ io.on("connection", function (client) {
 
   // Tham gia chat
   client.on("join", async function (data) {
-    room = data.room;
-    client.join(room);
+    try {
+      room = data.room;
+      client.join(room);
+    } catch (error) {
+      console.error("Error in join event:", error);
+    }
   });
 
   //Xu ly tin nhan nhan duoc tu Client => Gui lai phong chat
 
-  // client.on("message", function (data) {
-  //   io.to(room).emit("thread", data);
-  // });
-  // (BỎ QUA)
-
-  // client.on("message", async function (data) {
-  //   const obj = JSON.parse(data); // Chuyển từ JSON string thành object
-  //   // obj.time = new Date().toLocaleTimeString("vi-VN"); // Lấy thời gian hiện tại theo múi giờ Việt Nam
-  //   const now = new Date();
-  //   obj.time =
-  //     now.getHours().toString().padStart(2, "0") +
-  //     ":" +
-  //     now.getMinutes().toString().padStart(2, "0");
-  //   io.to(room).emit("thread", JSON.stringify(obj)); // Gửi tin nhắn kèm thời gian
-
-  // });
-
-  // ======
-  //Xu ly tin nhan nhan duoc tu Client => Gui lai phong chat
   client.on("message", async function (data) {
     try {
       const obj = JSON.parse(data);
@@ -60,25 +45,41 @@ io.on("connection", function (client) {
         ":" +
         now.getMinutes().toString().padStart(2, "0");
 
-      // Gửi tin nhắn qua WebSocket
-      io.to(room).emit("thread", JSON.stringify(obj));
-
-      // Lưu tin nhắn vào database (đề phòng client không gọi API)
-      await messageModel.create({
+      // Lưu tin nhắn vào database và lấy _id
+      const savedMessage = await messageModel.create({
         room: room,
         sender: obj.name,
         message: obj.message,
-        // emotion: id_emotion,
       });
+
+      // Thêm _id vào obj để gửi về client
+      obj._id = savedMessage._id;
+
+      io.to(room).emit("thread", JSON.stringify(obj));
     } catch (error) {
       console.error("Error handling message:", error);
     }
   });
-  // ======
 
-  //Xu ly emotion nhan duoc tu Client => Gui lai phong chat
+  // Xu ly emotion nhan duoc tu Client => Gui lai phong chat
+  // Luu ca emotion vao database
+
   client.on("emotion", async function (data) {
-    io.to(room).emit("emotion", data);
+    try {
+      const obj = JSON.parse(data);
+      const { id, emotion } = obj;
+
+      // Cập nhật tin nhắn trong database dựa trên id
+      await messageModel.updateOne(
+        { _id: id }, // Giả sử id trong client tương ứng với _id trong MongoDB
+        { $set: { emotion: emotion } }
+      );
+
+      // Gửi emotion tới tất cả client trong phòng
+      io.to(room).emit("emotion", data);
+    } catch (error) {
+      console.error("Error handling emotion:", error);
+    }
   });
 });
 
