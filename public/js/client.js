@@ -9,11 +9,18 @@ const btn_send = document.getElementById("btn_send");
 
 const ul_message = document.getElementById("ul_message");
 
+const btn_logout = document.getElementById("btn_logout");
+
 var socket = io.connect();
+
 
 // let my_name = "";
 let my_name = localStorage.getItem("username");
 
+// Kiem tra dang nhap
+if (!localStorage.getItem("username")) {
+  window.location.href = "/login";
+}
 
 // ID cho tung emotion
 const emotions = [
@@ -263,3 +270,11 @@ ip_image.addEventListener("change", () => {
 });
 
 
+// Log out
+btn_logout.addEventListener("click", () => {
+  // Xóa username khỏi localStorage
+  localStorage.removeItem("username");
+  
+  // Chuyển hướng về trang đăng nhập
+  window.location.href = "/login";
+});
