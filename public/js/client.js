@@ -1,28 +1,23 @@
 // CAC SU KIEN TU CLIENT
 
-// const ip_name = document.getElementById("name");
 const ip_room = document.getElementById("room");
 const ip_message = document.getElementById("ip_message");
-
 const btn_join = document.getElementById("btn_join");
 const btn_send = document.getElementById("btn_send");
-
 const ul_message = document.getElementById("ul_message");
-
 const btn_logout = document.getElementById("btn_logout");
 
 var socket = io.connect();
 
-
-// let my_name = "";
+// LẤY USERNAME
 let my_name = localStorage.getItem("username");
 
-// Kiem tra dang nhap
-if (!localStorage.getItem("username")) {
+// KIỂM TRA CÓ ĐĂNG NHẬP CHƯA => LOGIN => CHAT
+if (!my_name) {
   window.location.href = "/login";
 }
 
-// ID cho tung emotion
+// ID CHO TỪNG EMOTION
 const emotions = [
   {
     id: 1,
@@ -49,8 +44,7 @@ socket.on("connect", function () {
   console.log("Connected to server!");
 });
 
-
-// Lay ID phong gui den Server
+// LẤY ID PHÒNG NGƯỜI DÙNG NHẬP GỬI LÊN SERVER
 btn_join.addEventListener("click", async () => {
   const room = ip_room.value;
   socket.emit("join", { room });
@@ -59,6 +53,9 @@ btn_join.addEventListener("click", async () => {
   try {
     const response = await fetch(`/api/messages/${room}`);
     const messages = await response.json();
+
+    my_name = localStorage.getItem("username"); // Cập nhật lại my_name trước khi hiển thị tin nhắn
+    console.log("Current user:", my_name); // Log để kiểm tra
 
     ul_message.innerHTML = "";
 
@@ -75,19 +72,31 @@ btn_join.addEventListener("click", async () => {
       }
 
       li.innerHTML = `
-        <span id="${msg._id}">
-          <p>${
+      
+      <div class="message-container">
+        ${
+          msg.sender !== my_name
+            ? `<img src="${
+                msg.avatar || "https://via.placeholder.com/50"
+              }" alt="Avatar" class="avatar">`
+            : ""
+        }
+          <span id="${msg._id}" class="content">
+
+          <p style="display: inline-block; vertical-align: middle;">${
             msg.message.startsWith("https")
               ? `<img style="width: 200px; background-color: none" src="${msg.message}">`
               : msg.message
           }</p>
+
           <small style="color: gray; font-size: 12px; margin-top: 5px; display: block; text-align: right;">${time}</small>
           ${emotionHTML}
         </span>
         <i onclick="show(event, '${
           msg._id
         }')" class="choose_emotion fa-solid fa-face-smile" style="color: white"></i>
-      `;
+      </div>
+        `;
 
       if (msg.sender === my_name) {
         li.classList.add("right");
@@ -102,13 +111,18 @@ btn_join.addEventListener("click", async () => {
   }
 });
 
-
-// Hàm gửi tin nhắn đến Server
-
+// GỬI TIN NHẮN ĐẾN SERVER
 const sendMessage = async () => {
   const message = ip_message.value;
   const room = ip_room.value;
   const timeSent = new Date().toLocaleTimeString();
+
+  if (!room) {
+    alert("Please join a room or select a friend to chat with!");
+    return;
+  }
+
+  my_name = localStorage.getItem("username"); // Cập nhật lại my_name trước khi gửi
 
   if (ip_image?.files[0]) {
     const formData = new FormData();
@@ -122,7 +136,9 @@ const sendMessage = async () => {
 
       if (!res.ok) {
         const errorText = await res.text();
-        throw new Error(`Upload failed with status: ${res.status}, response: ${errorText}`);
+        throw new Error(
+          `Upload failed with status: ${res.status}, response: ${errorText}`
+        );
       }
 
       const json = await res.json();
@@ -158,24 +174,35 @@ const sendMessage = async () => {
   }
 };
 
-//Gui tin nhan bang nut Send
+// GỬI TIN NHẮN BẰNG NÚT SEND
 btn_send.addEventListener("click", sendMessage);
 
-//Gui tin nhan bang nut Enter
+// GỬI TIN NHẮN BẰNG PHÍM ENTER
 ip_message.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     sendMessage();
   }
 });
 
-// Nhan tin nhan tu Server
+// NHẬN TIN NHẮN TỪ SERVER TRẢ VỀ
 socket.on("thread", function (data) {
   const obj = JSON.parse(data);
+  my_name = localStorage.getItem("username"); // Cập nhật lại my_name khi nhận tin nhắn mới
+  console.log("Received message, current user:", my_name); // Log để kiểm tra
   const li = document.createElement("li");
 
   li.innerHTML = `
-    <span id="${obj._id}"> <!-- Sử dụng _id từ database -->
-      <p>${
+  <div class="message-container">
+    ${
+      obj.name !== my_name
+        ? `<img src="${
+            obj.avatar || "https://via.placeholder.com/50"
+          }" alt="Avatar" class="avatar">`
+        : ""
+    }
+        <span id="${obj._id}" class="content"> <!-- Sử dụng _id từ database -->
+
+      <p style="display: inline-block; vertical-align: middle;">${
         obj.message.startsWith("https")
           ? '<img style="width: 200px; background-color: none" src="' +
             obj.message +
@@ -190,8 +217,10 @@ socket.on("thread", function (data) {
     <i onclick="show(event, '${
       obj._id
     }')" class="choose_emotion fa-solid fa-face-smile" style="color: white"></i>
-  `;
+ </div>
+    `;
 
+    // Nếu tin của mình thì ở bên phải
   if (obj.name === my_name) {
     li.classList.add("right");
   }
@@ -200,8 +229,7 @@ socket.on("thread", function (data) {
   ul_message.scrollTop = ul_message.scrollHeight;
 });
 
-// Ham hien/an emotion khi click vao bieu tuong
-
+// HÀM ẨN HIỆN EMOTIONS KHI TRỎ VÀO
 function show(e, id) {
   if (e.target.classList.contains("choose_emotion")) {
     if (e.target.innerHTML.toString().trim().length === 0) {
@@ -219,8 +247,7 @@ function show(e, id) {
   }
 }
 
-//Ham hien emotion len tin nhan
-
+// HÀM HIỆN EMOTION ĐÃ CHỌN LÊN TIN NHẮN
 function choose(e, id, id_emotion) {
   const span_message = document.getElementById(id);
   const emotion = e.target;
@@ -233,7 +260,7 @@ function choose(e, id, id_emotion) {
 
   span_message.appendChild(emotion);
 
-  // Gui emotion len Server
+  // GỬI EMOTION LÊN SERVER
   const obj = {
     id: id, // Đây là _id từ database
     emotion: id_emotion,
@@ -241,7 +268,7 @@ function choose(e, id, id_emotion) {
   socket.emit("emotion", JSON.stringify(obj));
 }
 
-// Nhận emotion từ server và hiển thị
+// NHẬN EMOTION TỪ SERVER TRẢ VỀ
 socket.on("emotion", (data) => {
   const obj = JSON.parse(data);
   const span_message = document.getElementById(obj.id + "");
@@ -260,7 +287,7 @@ socket.on("emotion", (data) => {
   span_message.appendChild(emotion);
 });
 
-//Gui hinh anh
+// GỬI HÌNH ẢNH
 const ip_image = document.getElementById("ip_image");
 const img_message = document.getElementById("img_message");
 
@@ -269,12 +296,67 @@ ip_image.addEventListener("change", () => {
   img_message.style.display = "block";
 });
 
-
-// Log out
+// LOG OUT
 btn_logout.addEventListener("click", () => {
-  // Xóa username khỏi localStorage
   localStorage.removeItem("username");
-  
-  // Chuyển hướng về trang đăng nhập
+  localStorage.removeItem("full_name"); // Xóa full_name khi đăng xuất
+  localStorage.removeItem("avatar"); // Xóa avatar khi đăng xuất
   window.location.href = "/login";
 });
+
+// SỰ KIỆN GỬI LỜI MỜI KẾT BẠN
+window.sendFriendRequest = function (friendUsername) {
+  const username = localStorage.getItem("username");
+  console.log("Sending friend request:", { username, friendUsername });
+  fetch("/api/accounts/send-friend-request", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, friendUsername }),
+  })
+    .then((res) => {
+      console.log("Response status:", res.status);
+      return res.json();
+    })
+    .then((data) => {
+      console.log("Response data:", data);
+      alert(data.message);
+      if (data.message === "Friend request sent") location.reload();
+    })
+    .catch((err) => {
+      console.error("Error sending friend request:", err);
+      alert("Error sending friend request: " + err.message);
+    });
+};
+
+// SỰ KIỆN ĐỒNG Ý KẾT BẠN
+window.acceptFriendRequest = function (friendUsername) {
+  const username = localStorage.getItem("username");
+  console.log("Accepting friend request:", { username, friendUsername });
+  fetch("/api/accounts/accept-friend-request", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, friendUsername }),
+  })
+    .then((res) => {
+      console.log("Response status:", res.status);
+      return res.json();
+    })
+    .then((data) => {
+      console.log("Response data:", data);
+      alert(data.message);
+      if (data.message === "Friend request accepted") location.reload();
+    })
+    .catch((err) => {
+      console.error("Error accepting friend request:", err);
+      alert("Error accepting friend request: " + err.message);
+    });
+};
+
+// SỰ KIỆN CHAT KHI LÀ BẠN BÈ
+window.startChat = function (friendUsername) {
+  const myUsername = localStorage.getItem("username");
+  console.log("Starting chat with:", { myUsername, friendUsername });
+  const room = [myUsername, friendUsername].sort().join("_");
+  document.getElementById("room").value = room;
+  document.getElementById("btn_join").click();
+};

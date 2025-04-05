@@ -64,17 +64,99 @@ h1 {
 }
 
 /* ==========LOG OUT=========== */
-
-.logout-button {
-  background-color: #f44336;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin: 10px;
+/* .list_user {
+    background-color: #333;
+    padding: 15px;
+    border-radius: 8px;
+    width: 300px;
+    color: white;
 }
 
-.logout-button:hover {
-  background-color: #d32f2f;
+/* Phần chào người dùng */
+.user_greeting {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: white;
+  border-radius: 5px;
+}
+
+/* Nút Logout */
+#btn_logout {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#btn_logout:hover {
+  background-color: #e60000;
+}
+
+/* Danh sách user */
+.list_user ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list_user li {
+  padding: 8px;
+  border-bottom: 1px solid #555;
+}
+
+.list_user li:last-child {
+  border-bottom: none;
+}
+
+
+/* ============ */
+.user_item {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Khoảng cách giữa các phần tử */
+  font-size: 16px;
+  color: black;
+}
+
+.user_item i {
+  font-size: 18px;
+}
+
+.user_item .fa-user {
+  color: blue; /* Màu xám cho icon user */
+}
+
+.user_item .fa-circle-dot {
+  font-size: 12px;
+  margin-left: auto; /* Đẩy icon trạng thái sang phải */
+}
+
+
+/* ========IMAGE======= */
+#ip_image {
+  display: none; /* Ẩn input file */
+}
+
+.custom_file_upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  /* border-radius: 5px; */
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.custom_file_upload:hover {
+  background-color: #0056b3;
 }

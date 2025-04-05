@@ -18,6 +18,10 @@ const messageSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    avatar: {
+      type: String, // Lưu avatar của người gửi
+      default: "https://via.placeholder.com/50",
+    },
     timestamp: {
       // Thời gian gửi tin nhắn
       type: Date,

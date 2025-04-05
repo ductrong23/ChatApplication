@@ -1,7 +1,8 @@
-<!-- GIAO DIEN LOGIN - REGISTER
+<!-- GIAO DIỆN LOGIN - REGISTER -->
 
 <link rel="stylesheet" href="css/style.css" />
 
+<!-- FORM LOGIN - REGISTER -->
 <div class="login-register">
   <form onsubmit="return false;" class="login">
     <caption>
@@ -21,6 +22,12 @@
       placeholder="Password..."
     />
     <button id="btn_login">Login</button>
+    <p
+      id="show_register"
+      style="cursor: pointer; color: blue; text-align: center"
+    >
+      Don't have an account? Register here!
+    </p>
   </form>
 
   <form onsubmit="return false;" class="register">
@@ -54,42 +61,15 @@
       placeholder="Fullname..."
     />
     <br />
-    <button id="btn_register">Register</button>
-  </form>
-</div>
- -->
- <link rel="stylesheet" href="css/style.css" />
- <div class="login-register">
-  <form onsubmit="return false;" class="login">
-    <caption>
-      <h1>Login</h1>
-    </caption>
-    <input type="text" name="username" id="ip_username" placeholder="Username..." />
-    <br />
-    <input type="password" name="password" id="ip_password" placeholder="Password..." />
-    <button id="btn_login">Login</button>
-    <p id="show_register" style="cursor: pointer; color: blue; text-align: center;">
-      Don't have an account? Register here!
-    </p>
-  </form>
-
-  <form onsubmit="return false;" class="register">
-    <caption>
-      <h1>Register</h1>
-    </caption>
-    <input type="text" name="username" id="ip_username2" placeholder="Username..." />
-    <br />
-    <input type="password" name="password" id="ip_password2" placeholder="Password..." />
-    <br />
-    <input type="password" name="password" id="ip_password22" placeholder="Re-Enter Password..." />
-    <input type="text" name="full_name" id="ip_full_name" placeholder="Fullname..." />
+    <input type="file" name="avatar" id="ip_avatar" accept="image/*" />
+    <!-- Thêm input cho avatar -->
     <br />
     <button id="btn_register">Register</button>
   </form>
 </div>
 
+<!-- SỰ KIỆN ĐĂNG NHẬP -->
 <script>
-  //Dang nhap
   const btn_login = document.getElementById("btn_login");
   const ip_username = document.getElementById("ip_username");
   const ip_password = document.getElementById("ip_password");
@@ -123,7 +103,10 @@
           alert(result.message);
         } else {
           localStorage.setItem("username", result.username); //Luu username vao localStorage cua trinh duyet
-          window.location = "/chat";
+          localStorage.setItem("full_name", result.full_name); // Lưu full_name
+          // window.location = "/chat";
+          localStorage.setItem("avatar", result.avatar); // Lưu avatar
+          window.location = `/chat?username=${result.username}`; // Chuyển hướng kèm username
         }
       })
       .catch((error) => {
@@ -133,13 +116,15 @@
   });
 </script>
 
+
+<!-- SỰ KIỆN ĐĂNG KÝ -->
 <script>
-  //Dang ky
   const btn_register = document.getElementById("btn_register");
   const ip_username2 = document.getElementById("ip_username2");
   const ip_password2 = document.getElementById("ip_password2");
   const ip_password22 = document.getElementById("ip_password22");
   const ip_full_name = document.getElementById("ip_full_name");
+  const ip_avatar = document.getElementById("ip_avatar");
 
   btn_register.addEventListener("click", () => {
     event.preventDefault(); // Ngăn chặn hành vi mặc định
@@ -158,22 +143,31 @@
       return;
     }
 
-    const obj = {
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("password", password);
+    formData.append("full_name", full_name);
+    if (ip_avatar.files[0]) {
+      formData.append("avatar", ip_avatar.files[0]); // Thêm file avatar
+    }
+
+    console.log("Sending register data:", {
       username,
       password,
       full_name,
-    };
+      hasAvatar: !!ip_avatar.files[0],
+    }); // Log dữ liệu gửi đi
 
     fetch("/api/accounts/register", {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
       method: "POST",
-      body: JSON.stringify(obj),
+      body: formData,
     })
-      .then((res) => res.json())
+      .then((res) => {
+        console.log("Response status:", res.status); // Log trạng thái phản hồi
+        return res.json();
+      })
       .then((result) => {
+        console.log("Register result:", result); // Log kết quả
         if (result.statusCode) {
           alert(result.message);
         } else {
@@ -188,9 +182,12 @@
 </script>
 
 
+<!-- SỰ KIỆN SHOW REGISTER -->
 <script>
-  document.getElementById("show_register").addEventListener("click", function () {
-    document.querySelector(".register").style.display = "block";
-    this.style.display = "none"; // Ẩn dòng chữ "Register here!" sau khi click
-  });
+  document
+    .getElementById("show_register")
+    .addEventListener("click", function () {
+      document.querySelector(".register").style.display = "block";
+      this.style.display = "none"; // Ẩn dòng chữ "Register here!" sau khi click
+    });
 </script>

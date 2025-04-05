@@ -1,8 +1,10 @@
 // SERVER XU LY va TRA LAI CAC SU KIEN TU CLIENT
 
 // ===========================
-//Luu tin nhan
+// Luu tin nhan
 const messageModel = require("./models/message.model");
+// Avatar trong tin nhan
+const accountModel = require("./models/account.model"); // Thêm import accountModel
 // ===========================
 
 const express = require("express");
@@ -15,6 +17,7 @@ const connectDB = require("./configs/database");
 const router = require("./routers");
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // Thêm để parse form data
 app.use(express.static("public"));
 
 app.set("view engine", "ejs");
@@ -34,8 +37,7 @@ io.on("connection", function (client) {
     }
   });
 
-  //Xu ly tin nhan nhan duoc tu Client => Gui lai phong chat
-
+  // XỬ LÝ TIN NHẮN NHẬN ĐƯỢC TỪ CLIENT => TRẢ LẠI VỀ CHO CLIENT
   client.on("message", async function (data) {
     try {
       const obj = JSON.parse(data);
@@ -45,15 +47,21 @@ io.on("connection", function (client) {
         ":" +
         now.getMinutes().toString().padStart(2, "0");
 
+      // Lấy thông tin người gửi
+      const senderAccount = await accountModel.findOne({ username: obj.name });
       // Lưu tin nhắn vào database và lấy _id
       const savedMessage = await messageModel.create({
         room: room,
         sender: obj.name,
         message: obj.message,
+        avatar: senderAccount
+          ? senderAccount.avatar
+          : "https://via.placeholder.com/50", // Lưu avatar vào tin nhắn
       });
 
       // Thêm _id vào obj để gửi về client
       obj._id = savedMessage._id;
+      obj.avatar = savedMessage.avatar;
 
       io.to(room).emit("thread", JSON.stringify(obj));
     } catch (error) {
@@ -61,9 +69,8 @@ io.on("connection", function (client) {
     }
   });
 
-  // Xu ly emotion nhan duoc tu Client => Gui lai phong chat
-  // Luu ca emotion vao database
-
+  // XỬ LÝ EMOTION NHẬN TỪ CLIENT => TRẢ LẠI PHÒNG CHAT
+  // LƯU EMOTION VÀO DATABASE
   client.on("emotion", async function (data) {
     try {
       const obj = JSON.parse(data);
@@ -87,10 +94,7 @@ connectDB();
 
 router(app);
 
-// app.get("/chat", (req, res) => {
-//   return res.render("chat.ejs");
-// });
-
+// SERVER HOẠT ĐỘNG TRÊN PORT 5000
 server.listen(5000, () => {
   console.log("Server is running on port 5000");
 });

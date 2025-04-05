@@ -9,29 +9,67 @@
 
 <div style="display: flex">
   <ul class="list_user">
-    <button id="btn_logout">Logout</button>
-    <% accounts.forEach(account => {%>
+    
+    <!-- LẤY FULL_NAME CỦA TÀI KHOẢN ĐANG ĐĂNG NHẬP -->
+    <div class="user_greeting">
+      <img src="<%= currentUser.avatar %>" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;" />
+      <span id="current_user_fullname"><%= currentUser.full_name %></span> <!-- Lấy từ currentUser -->
+      <button id="btn_logout">Logout</button>
+    </div>
+
+    <!-- LẤY DANH SÁCH LỜI MỜI KẾT BẠN -->
+    <h3 style="color: white;">Friend Requests</h3>
+    <% currentUser.friendRequests.forEach(request => { %>
     <li>
-      <div>
-        Username:
-        <p><%= account.username%></p>
-      </div>
-      <div>
-        Fullname:
-        <p><%= account.full_name%></p>
-      </div>
+      <p class="user_item">
+        <img src="<%= request.avatar %>" alt="Avatar" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 5px;" />
+        <%= request.full_name %>
+        <button onclick="acceptFriendRequest('<%= request.username %>')">Accept</button>
+      </p>
     </li>
     <% }) %>
+
+    <!-- LẤY DANH SÁCH BẠN BÈ ĐÃ KẾT BẠN -->
+    <h3 style="color: white;">Friends</h3>
+    <% currentUser.friends.forEach(friend => { %>
+    <li>
+      <p class="user_item" onclick="startChat('<%= friend.username %>')">
+        <img src="<%= friend.avatar %>" alt="Avatar" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 5px;" />
+        <%= friend.full_name %>
+        <i class="fa-solid fa-circle" style="color: green; font-size: 10px"></i>
+      </p>
+    </li>
+    <% }) %>
+
+
+    <!-- LẤY ĐỀ XUẤT BẠN BÈ -->
+    <h3 style="color: white;">Friend suggestions</h3>
+    <% accounts.forEach(account => { %>
+    <li>
+      <p class="user_item">
+        <img src="<%= account.avatar %>" alt="Avatar" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 5px;" />
+        <%= account.full_name %>
+        <% if (account.username !== currentUser.username) { %>
+          <button onclick="startChat('<%= account.username %>')"><i class="fa-brands fa-rocketchat"></i></button>
+          <% if (!currentUser.friends.some(f => f.username === account.username) && !currentUser.friendRequests.some(r => r.username === account.username)) { %>
+            <button onclick="sendFriendRequest('<%= account.username %>')"><i class="fa-solid fa-user-plus"></i></button>
+          <% } %>
+        <% } %>
+      </p>
+    </li>
+    <% }) %>
+    
   </ul>
 
+  
+  <!-- Ô THAM GIA PHÒNG CHAT -->
   <div class="container">
     <div class="container_join">
-      <!-- <input type="text" id="name" placeholder="Your Name ..." /> -->
-      <!-- Khong can nhap Your Name boi vi co luu lai username ben login.ejs (localStorage) -->
-      <input type="text" id="room" placeholder="ID Room ..." />
+      <input type="text" id="room" placeholder="Please enter chat room name ..." />
       <button id="btn_join">Join</button>
     </div>
 
+    <!-- TIN NHẮN ĐÃ GỬI -->
     <ul id="ul_message">
       <li>
         <span><p>message</p></span>
@@ -83,10 +121,15 @@
       </li>
     </ul>
 
+    <!-- GỬI TIN NHẮN - HÌNH ẢNH -->
     <div class="container_send">
       <input type="text" id="ip_message" placeholder="Aa..." />
       <img style="width: 20%; display: none" alt="" id="img_message" />
-      <input style="width: 20%" type="file" id="ip_image" />
+      <!-- <input style="width: 20%" type="file" id="ip_image" / placeholder="IMAGE"> -->
+      <label for="ip_image" class="custom_file_upload">
+       </i> <i class="fa-solid fa-image"></i>
+    </label>
+    <input type="file" id="ip_image" />
       <button id="btn_send">Send</button>
     </div>
   </div>
@@ -95,3 +138,11 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="js/client.js"></script>
 
+<!-- Hien thi fullname -->
+<script>
+    // Đồng bộ localStorage với dữ liệu từ server
+  localStorage.setItem("username", "<%= currentUser.username %>");
+  localStorage.setItem("full_name", "<%= currentUser.full_name %>");
+  localStorage.setItem("avatar", "<%= currentUser.avatar %>");
+
+</script>
