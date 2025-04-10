@@ -61,13 +61,19 @@ btn_join.addEventListener("click", async () => {
 
     messages.forEach((msg) => {
       const li = document.createElement("li");
-      const time = new Date(msg.timestamp).toLocaleTimeString();
+      // const time = new Date(msg.timestamp).toLocaleTimeString();
+      // Chỉ lấy giờ và phút từ timestamp
+      const date = new Date(msg.timestamp);
+      const time = `${date.getHours().toString().padStart(2, "0")}:${date
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}`;
 
       let emotionHTML = "";
       if (msg.emotion) {
         const emotionData = emotions.find((e) => e.id === msg.emotion);
         if (emotionData) {
-          emotionHTML = `<i style="position: absolute; top: 23px; left: 5px; background: gray; border-radius: 50%">${emotionData.emotion}</i>`;
+          emotionHTML = `<i>${emotionData.emotion}</i>`;
         }
       }
 
@@ -81,7 +87,8 @@ btn_join.addEventListener("click", async () => {
               }" alt="Avatar" class="avatar">`
             : ""
         }
-          <span id="${msg._id}" class="content">
+        
+        <span id="${msg._id}" class="content">
 
           <p style="display: inline-block; vertical-align: middle;">${
             msg.message.startsWith("https")
@@ -89,12 +96,13 @@ btn_join.addEventListener("click", async () => {
               : msg.message
           }</p>
 
-          <small style="color: gray; font-size: 12px; margin-top: 5px; display: block; text-align: right;">${time}</small>
-          ${emotionHTML}
+          <small class="timestamp">${time}</small>
+            ${emotionHTML}
+            
         </span>
         <i onclick="show(event, '${
           msg._id
-        }')" class="choose_emotion fa-solid fa-face-smile" style="color: white"></i>
+        }')" class="choose_emotion fa-solid fa-face-smile" style="color: gray; border-radius: 50%; background: rgba(255, 255, 255, 0.2); border: 1px solid #ffffff;"></i>
       </div>
         `;
 
@@ -209,18 +217,18 @@ socket.on("thread", function (data) {
             '">'
           : obj.message
       }</p>
-      <small style="color: gray; font-size: 12px; margin-top: 5px; display: block; text-align: right;">${
-        obj.time
-      }</small>
+      
+      <small class="timestamp">${obj.time}</small>
+
       <i></i>
     </span>
     <i onclick="show(event, '${
       obj._id
-    }')" class="choose_emotion fa-solid fa-face-smile" style="color: white"></i>
+    }')" class="choose_emotion fa-solid fa-face-smile" style="color: gray; border-radius: 50%; background: rgba(255, 255, 255, 0.2); border: 1px solid #ffffff;"></i>
  </div>
     `;
 
-    // Nếu tin của mình thì ở bên phải
+  // Nếu tin của mình thì ở bên phải
   if (obj.name === my_name) {
     li.classList.add("right");
   }
@@ -235,10 +243,10 @@ function show(e, id) {
     if (e.target.innerHTML.toString().trim().length === 0) {
       e.target.innerHTML = `
         <div class="emotions">
-          <i onclick="choose(event, '${id}', 1)" class="fa-solid fa-heart" style="color: red"></i>
-          <i onclick="choose(event, '${id}', 2)" class="fa-solid fa-face-laugh-beam" style="color: yellow"></i>
-          <i onclick="choose(event, '${id}', 3)" class="fa-solid fa-face-sad-tear" style="color: blue"></i>
-          <i onclick="choose(event, '${id}', 4)" class="fa-solid fa-face-rolling-eyes" style="color: orange"></i>
+          <i onclick="choose(event, '${id}', 1)" class="fa-solid fa-heart" style="color: red; border: 3px sloid white"></i>
+          <i onclick="choose(event, '${id}', 2)" class="fa-solid fa-face-laugh-beam" style="color: yellow; border: 3px sloid white "></i>
+          <i onclick="choose(event, '${id}', 3)" class="fa-solid fa-face-sad-tear" style="color: green; border: 3px sloid white"></i>
+          <i onclick="choose(event, '${id}', 4)" class="fa-solid fa-face-rolling-eyes" style="color: orange; border: 3px sloid white"></i>
         </div>
       `;
     } else {
@@ -250,11 +258,8 @@ function show(e, id) {
 // HÀM HIỆN EMOTION ĐÃ CHỌN LÊN TIN NHẮN
 function choose(e, id, id_emotion) {
   const span_message = document.getElementById(id);
-  const emotion = e.target;
+  const emotion = e.target;;
 
-  emotion.style.position = "absolute";
-  emotion.style.top = "23px";
-  emotion.style.left = "5px";
   emotion.style.background = "gray";
   emotion.style.borderRadius = "50%";
 
@@ -278,9 +283,6 @@ socket.on("emotion", (data) => {
   div.innerHTML = emotion;
   emotion = div.firstChild;
 
-  emotion.style.position = "absolute";
-  emotion.style.top = "23px";
-  emotion.style.left = "5px";
   emotion.style.background = "gray";
   emotion.style.borderRadius = "50%";
 

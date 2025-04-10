@@ -6,9 +6,15 @@
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
+
 
 <div style="display: flex">
+
   <ul class="list_user">
+
+    <h1>ĐT CHAT</h1>
+  
     
     <!-- LẤY FULL_NAME CỦA TÀI KHOẢN ĐANG ĐĂNG NHẬP -->
     <div class="user_greeting">
@@ -18,7 +24,7 @@
     </div>
 
     <!-- LẤY DANH SÁCH LỜI MỜI KẾT BẠN -->
-    <h3 style="color: white;">Friend Requests</h3>
+    <h3 style="color: white; margin-top: 10%">Friend Requests</h3>
     <% currentUser.friendRequests.forEach(request => { %>
     <li>
       <p class="user_item">
@@ -30,7 +36,7 @@
     <% }) %>
 
     <!-- LẤY DANH SÁCH BẠN BÈ ĐÃ KẾT BẠN -->
-    <h3 style="color: white;">Friends</h3>
+    <h3 style="color: white; margin-top: 15%">Friends</h3>
     <% currentUser.friends.forEach(friend => { %>
     <li>
       <p class="user_item" onclick="startChat('<%= friend.username %>')">
@@ -43,7 +49,8 @@
 
 
     <!-- LẤY ĐỀ XUẤT BẠN BÈ -->
-    <h3 style="color: white;">Friend suggestions</h3>
+    
+    <h3 style="color: white; margin-top: 15%">Friend suggestions</h3>
     <% accounts.forEach(account => { %>
     <li>
       <p class="user_item">

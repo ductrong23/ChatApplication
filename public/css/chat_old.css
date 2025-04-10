@@ -64,7 +64,7 @@ body {
   margin-top: 9px;
 }
 
-#ul_message li span{
+#ul_message li span {
   position: relative;
 }
 
@@ -99,7 +99,7 @@ body {
   left: auto; 
 } */
 
-.right .choose_emotion .emotions{
+.right .choose_emotion .emotions {
   right: 30px;
 }
 
@@ -126,44 +126,134 @@ body {
   display: flex;
 }
 
-.choose_emotion {
+/* .choose_emotion {
   margin: 0 5px;
   display: none !important;
   position: relative;
 }
 
-
 #ul_message li:hover .choose_emotion {
   display: block !important;
   cursor: pointer;
+} */
+
+/* Icon chọn emotion ẩn mặc định */
+.choose_emotion {
+  display: none; /* Ẩn mặc định, không cần !important nếu không bị ghi đè */
+  position: absolute;
+  top: 35%;
+  transform: translateY(-50%);
+  cursor: pointer;
 }
 
+/* Hiện icon khi hover vào li */
+#ul_message li:hover .choose_emotion {
+  display: block; /* Hiện khi hover */
+}
+
+/* Vị trí icon cho tin nhắn của người khác (bên trái) */
+.message-container .choose_emotion {
+  right: -30px; /* Đặt icon bên phải tin nhắn của người khác */
+}
+
+/* Vị trí icon cho tin nhắn của mình (bên phải) */
+.right .message-container .choose_emotion {
+  left: -30px; /* Đặt icon bên trái tin nhắn của mình */
+  right: auto;
+}
 
 .emotions {
-  background-color: rgb(250, 233, 233);
+  /* background-color: rgb(250, 233, 233); */
+  background: rgba(255, 255, 255, 0.2); /* Nền trắng trong suốt */
   padding: 5px;
   border-radius: 15px;
   position: absolute;
   bottom: 20px;
   display: flex;
+  border: 1px solid #ffffff; /* Viền trắng */
 }
 
-.emotions i:hover{
+.emotions i:hover {
   transform: scale(1.5);
 }
 
-.emotions i{
+.emotions i {
   margin: 5px;
   transition: linear 0.2s;
 }
 
 
 
-/* ------------AVATAR---------------- */
+/* ------------AVATAR - TIME---------------- */
+
+/* Định dạng chung cho timestamp */
+.timestamp {
+  color: gray;
+  font-size: 12px;
+  margin-top: 15px;
+  display: block;
+}
+
+/* Định dạng chung cho emotion trong .content */
+.content i {
+  position: absolute;
+  border-radius: 50%;
+  top: 80%; /* Đặt ở giữa theo chiều dọc */
+  transform: translateY(-50%); /* Căn giữa chính xác */
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.2); /* Nền trắng trong suốt */
+  border: 1px solid #ffffff; /* Viền trắng */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Bóng nhẹ */
+}
+
+/* Emotion cho tin nhắn của người khác (bên trái) */
+.message-container .content i {
+  right: 5px; /* Đặt emotion bên phải tin nhắn */
+  left: auto; /* Xóa giá trị left mặc định */
+}
+
+/* Emotion cho tin nhắn của mình (bên phải) */
+.right .message-container .content i {
+  left: 5px; /* Đặt emotion bên trái tin nhắn */
+  right: auto; /* Xóa giá trị right mặc định */
+}
+
+/* Tin nhắn của người khác (bên trái) */
+.message-container .content .timestamp {
+  text-align: left; /* Thời gian bên trái dưới tin nhắn */
+}
+
+/* Tin nhắn của mình (bên phải) */
+.right .message-container .content .timestamp {
+  text-align: right; /* Thời gian bên phải dưới tin nhắn */
+}
+
+/* Đảm bảo nội dung tin nhắn không bị ảnh hưởng */
+.message-container .content {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+#ul_message li span p {
+  width: fit-content;
+  background-image: linear-gradient(
+    to right,
+    rgb(204, 0, 255),
+    rgb(220, 110, 235)
+  );
+  padding: 8px;
+  color: white;
+  border-radius: 15px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
 .message-container {
   display: flex;
   align-items: flex-start;
   margin: 10px 0;
+  position: relative; /* Thêm position: relative để .choose_emotion định vị tuyệt đối dựa trên nó */
 }
 
 .message-container .avatar {
@@ -176,6 +266,7 @@ body {
 .message-container .content {
   display: inline-block;
   vertical-align: middle;
+  position: relative; /* Đảm bảo nội dung không bị dịch chuyển */
 }
 
 /* Tin nhắn bên phải (của mình) không cần avatar */
@@ -185,4 +276,52 @@ body {
 
 .right .message-container .avatar {
   display: none; /* Ẩn avatar cho tin nhắn của mình */
+}
+
+/* ============ADD - CHAT BUTTON============== */
+
+.user_item .fa-brands:hover {
+  cursor: pointer;
+  background-color: green;
+}
+
+.user_item .fa-solid:hover {
+  cursor: pointer;
+  background-color: green;
+}
+
+.user_item button:hover {
+  cursor: pointer;
+  background-color: green;
+}
+
+/* Định dạng chung cho .user_item */
+.user_item {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Khoảng cách giữa các phần tử */
+  font-size: 16px;
+  color: black;
+}
+
+/* Hiệu ứng hover cho .user_item trong danh sách bạn bè */
+.list_user .user_item:hover {
+  cursor: pointer; /* Hiển thị con trỏ chuột khi hover */
+}
+
+
+h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 600;
+  text-align: center;
+  color: #ffffff;
+  text-shadow: 
+    0 0 5px #a777e3,
+    0 0 10px #a777e3,
+    0 0 20px #6e8efb,
+    0 0 40px #6e8efb;
+  margin: 20px 0;
+  letter-spacing: 2px;
+  
 }
