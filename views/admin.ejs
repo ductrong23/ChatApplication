@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title style="text-align: center; color: white">Admin - Manage Sensitive Words</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+  <style>
+    .admin-container {
+      width: 80%;
+      margin: 20px auto;
+      padding: 20px;
+      background: #1c1e21;
+      color: white;
+      border-radius: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #555;
+    }
+    th {
+      background: #333;
+    }
+    button {
+      padding: 5px 10px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #c82333;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <h1>Admin - Sensitive Word Management</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Word</th>
+          <th>Reported By</th>
+          <th>Message Content</th>
+          <th>Sender</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (pendingWords.length === 0) { %>
+          <tr>
+            <td colspan="5">No pending sensitive words</td>
+          </tr>
+        <% } else { %>
+          <% pendingWords.forEach(word => { %>
+            <tr>
+              <td><%= word.word %></td>
+              <td><%= word.reportedBy %></td>
+              <td><%= word.messageId ? word.messageId.message : "N/A" %></td>
+              <td><%= word.messageId ? word.messageId.sender : "N/A" %></td>
+              <td>
+                <button onclick="blacklistWord('<%= word._id %>')">Blacklist</button>
+              </td>
+            </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    function blacklistWord(wordId) {
+      if (!confirm("Are you sure you want to blacklist this word?")) return;
+
+      fetch("/api/messages/blacklist-sensitive", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ wordId }),
+      })
+        .then(res => {
+          if (!res.ok) throw new Error(`Server responded with status: ${res.status}`);
+          return res.json();
+        })
+        .then(data => {
+          alert(data.message);
+          location.reload(); // Tải lại trang sau khi blacklist
+        })
+        .catch(err => {
+          console.error("Error blacklisting word:", err);
+          alert("Error: " + err.message);
+        });
+    }
+  </script>
+</body>
+</html>

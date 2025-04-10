@@ -103,7 +103,11 @@ btn_join.addEventListener("click", async () => {
         <i onclick="show(event, '${
           msg._id
         }')" class="choose_emotion fa-solid fa-face-smile" style="color: gray; border-radius: 50%; background: rgba(255, 255, 255, 0.2); border: 1px solid #ffffff;"></i>
-      </div>
+      <!-- Thêm nút báo cáo -->
+        <i onclick="reportSensitiveWord(event, '${
+       msg._id
+        }')" class="report_sensitive fa-solid fa-flag" style="color: red; margin-left: 5px; cursor: pointer;"></i>
+        </div>
         `;
 
       if (msg.sender === my_name) {
@@ -197,6 +201,7 @@ socket.on("thread", function (data) {
   const obj = JSON.parse(data);
   my_name = localStorage.getItem("username"); // Cập nhật lại my_name khi nhận tin nhắn mới
   console.log("Received message, current user:", my_name); // Log để kiểm tra
+  console.log("Received thread event:", obj);
   const li = document.createElement("li");
 
   li.innerHTML = `
@@ -225,7 +230,11 @@ socket.on("thread", function (data) {
     <i onclick="show(event, '${
       obj._id
     }')" class="choose_emotion fa-solid fa-face-smile" style="color: gray; border-radius: 50%; background: rgba(255, 255, 255, 0.2); border: 1px solid #ffffff;"></i>
- </div>
+
+    <!-- Thêm nút báo cáo -->
+    <i onclick="reportSensitiveWord(event, '${obj._id}')" class="report_sensitive fa-solid fa-flag" style="color: red; margin-left: 5px; cursor: pointer;"></i>
+ 
+    </div>
     `;
 
   // Nếu tin của mình thì ở bên phải
@@ -258,7 +267,7 @@ function show(e, id) {
 // HÀM HIỆN EMOTION ĐÃ CHỌN LÊN TIN NHẮN
 function choose(e, id, id_emotion) {
   const span_message = document.getElementById(id);
-  const emotion = e.target;;
+  const emotion = e.target;
 
   emotion.style.background = "gray";
   emotion.style.borderRadius = "50%";
@@ -361,4 +370,51 @@ window.startChat = function (friendUsername) {
   const room = [myUsername, friendUsername].sort().join("_");
   document.getElementById("room").value = room;
   document.getElementById("btn_join").click();
+};
+
+
+// SU KIEN BAO CAO TU NGU NHAY CAM
+window.reportSensitiveWord = function (e, messageId) {
+  const messageSpan = document.getElementById(messageId);
+  if (!messageSpan) {
+    alert("Error: Message not found on page");
+    return;
+  }
+
+  const messageContent = messageSpan.querySelector("p").textContent.trim();
+  const sensitiveWord = prompt("Enter the sensitive word to report:", messageContent);
+  if (!sensitiveWord) return;
+
+  const reporter = localStorage.getItem("username");
+  if (!reporter) {
+    alert("Error: You must be logged in to report");
+    return;
+  }
+
+  const reportData = {
+    messageId,
+    sensitiveWord,
+    reporter,
+  };
+
+  console.log("Sending report data:", reportData); // Log dữ liệu trước khi gửi
+
+  fetch("/api/messages/report-sensitive", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(reportData),
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(`Server responded with status: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then((data) => {
+      alert(data.message);
+    })
+    .catch((err) => {
+      console.error("Error reporting sensitive word:", err);
+      alert("Error reporting sensitive word: " + err.message);
+    });
 };

@@ -9,4 +9,8 @@ router.post("/", messageController.saveMessage);
 // Route lấy tất cả tin nhắn trong phòng chat
 router.get("/:room", messageController.getMessagesByRoom);
 
+// Route xử lý báo cáo từ nhạy cảm
+router.post("/report-sensitive", messageController.reportSensitiveWord);
+router.post("/blacklist-sensitive", messageController.blacklistSensitiveWord);
+
 module.exports = router;

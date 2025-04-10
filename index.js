@@ -4,7 +4,9 @@
 // Luu tin nhan
 const messageModel = require("./models/message.model");
 // Avatar trong tin nhan
-const accountModel = require("./models/account.model"); // Thêm import accountModel
+const accountModel = require("./models/account.model");
+// Blacklist
+const sensitiveWordModel = require("./models/sensitiveWord.model");
 // ===========================
 
 const express = require("express");
@@ -15,6 +17,7 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 const connectDB = require("./configs/database");
 const router = require("./routers");
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Thêm để parse form data
@@ -46,6 +49,22 @@ io.on("connection", function (client) {
         now.getHours().toString().padStart(2, "0") +
         ":" +
         now.getMinutes().toString().padStart(2, "0");
+        // console.log("Received message:", obj);
+
+      // Lấy danh sách từ nhạy cảm trong blacklist
+      const blacklistedWords = await sensitiveWordModel.find({
+        status: "blacklisted",
+      });
+      let filteredMessage = obj.message;
+
+      // Thay thế từ nhạy cảm bằng dấu *
+      blacklistedWords.forEach((wordObj) => {
+        const regex = new RegExp(`\\b${wordObj.word}\\b`, "gi"); // Tìm từ độc lập, không phân biệt hoa thường
+        filteredMessage = filteredMessage.replace(
+          regex,
+          "*".repeat(wordObj.word.length)
+        );
+      });
 
       // Lấy thông tin người gửi
       const senderAccount = await accountModel.findOne({ username: obj.name });
@@ -53,7 +72,8 @@ io.on("connection", function (client) {
       const savedMessage = await messageModel.create({
         room: room,
         sender: obj.name,
-        message: obj.message,
+        // message: obj.message,
+        message: filteredMessage, // Duyet tu ngu nhay cam
         avatar: senderAccount
           ? senderAccount.avatar
           : "https://via.placeholder.com/50", // Lưu avatar vào tin nhắn
@@ -61,6 +81,7 @@ io.on("connection", function (client) {
 
       // Thêm _id vào obj để gửi về client
       obj._id = savedMessage._id;
+      obj.message = filteredMessage;
       obj.avatar = savedMessage.avatar;
 
       io.to(room).emit("thread", JSON.stringify(obj));
