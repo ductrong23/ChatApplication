@@ -18,7 +18,6 @@ const io = new Server(server);
 const connectDB = require("./configs/database");
 const router = require("./routers");
 
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Thêm để parse form data
 app.use(express.static("public"));
@@ -49,7 +48,16 @@ io.on("connection", function (client) {
         now.getHours().toString().padStart(2, "0") +
         ":" +
         now.getMinutes().toString().padStart(2, "0");
-        // console.log("Received message:", obj);
+      // console.log("Received message:", obj);
+
+      // Nhận diện thời gian trong tin nhắn (định dạng HH:MM)
+      const timeRegex = /(\d{1,2}:\d{2})/;
+      const timeMatch = obj.message.match(timeRegex);
+      let scheduledTime = null;
+      if (timeMatch) {
+        scheduledTime = timeMatch[0]; // Ví dụ: "15:00"
+        console.log("Detected scheduled time:", scheduledTime);
+      }
 
       // Lấy danh sách từ nhạy cảm trong blacklist
       const blacklistedWords = await sensitiveWordModel.find({
@@ -77,12 +85,15 @@ io.on("connection", function (client) {
         avatar: senderAccount
           ? senderAccount.avatar
           : "https://via.placeholder.com/50", // Lưu avatar vào tin nhắn
+        scheduledTime: scheduledTime, // Thêm trường scheduledTime
+        timestamp: now, // Lưu thời gian gửi thực tế
       });
 
       // Thêm _id vào obj để gửi về client
       obj._id = savedMessage._id;
       obj.message = filteredMessage;
       obj.avatar = savedMessage.avatar;
+      obj.scheduledTime = scheduledTime; // Gửi scheduledTime về client
 
       io.to(room).emit("thread", JSON.stringify(obj));
     } catch (error) {

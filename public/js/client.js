@@ -105,7 +105,7 @@ btn_join.addEventListener("click", async () => {
         }')" class="choose_emotion fa-solid fa-face-smile" style="color: gray; border-radius: 50%; background: rgba(255, 255, 255, 0.2); border: 1px solid #ffffff;"></i>
       <!-- Thêm nút báo cáo -->
         <i onclick="reportSensitiveWord(event, '${
-       msg._id
+          msg._id
         }')" class="report_sensitive fa-solid fa-flag" style="color: red; margin-left: 5px; cursor: pointer;"></i>
         </div>
         `;
@@ -225,14 +225,16 @@ socket.on("thread", function (data) {
       
       <small class="timestamp">${obj.time}</small>
 
-      <i></i>
+      
     </span>
     <i onclick="show(event, '${
       obj._id
     }')" class="choose_emotion fa-solid fa-face-smile" style="color: gray; border-radius: 50%; background: rgba(255, 255, 255, 0.2); border: 1px solid #ffffff;"></i>
 
     <!-- Thêm nút báo cáo -->
-    <i onclick="reportSensitiveWord(event, '${obj._id}')" class="report_sensitive fa-solid fa-flag" style="color: red; margin-left: 5px; cursor: pointer;"></i>
+    <i onclick="reportSensitiveWord(event, '${
+      obj._id
+    }')" class="report_sensitive fa-solid fa-flag" style="color: red; margin-left: 5px; cursor: pointer;"></i>
  
     </div>
     `;
@@ -244,6 +246,19 @@ socket.on("thread", function (data) {
 
   ul_message.appendChild(li);
   ul_message.scrollTop = ul_message.scrollHeight;
+
+  // // Nếu có scheduledTime, lên lịch thông báo
+  // if (obj.scheduledTime) {
+  //   scheduleNotification(obj);
+  // }
+  // Kiểm tra và lên lịch thông báo
+  if (obj.scheduledTime) {
+    console.log("Message has scheduledTime, calling scheduleNotification:", obj.scheduledTime);
+    scheduleNotification(obj);
+  } else {
+    console.log("No scheduledTime detected in message");
+  }
+
 });
 
 // HÀM ẨN HIỆN EMOTIONS KHI TRỎ VÀO
@@ -372,7 +387,6 @@ window.startChat = function (friendUsername) {
   document.getElementById("btn_join").click();
 };
 
-
 // SU KIEN BAO CAO TU NGU NHAY CAM
 window.reportSensitiveWord = function (e, messageId) {
   const messageSpan = document.getElementById(messageId);
@@ -382,7 +396,10 @@ window.reportSensitiveWord = function (e, messageId) {
   }
 
   const messageContent = messageSpan.querySelector("p").textContent.trim();
-  const sensitiveWord = prompt("Enter the sensitive word to report:", messageContent);
+  const sensitiveWord = prompt(
+    "Enter the sensitive word to report:",
+    messageContent
+  );
   if (!sensitiveWord) return;
 
   const reporter = localStorage.getItem("username");
@@ -418,3 +435,52 @@ window.reportSensitiveWord = function (e, messageId) {
       alert("Error reporting sensitive word: " + err.message);
     });
 };
+
+
+// HAM LEN LICH THONG BAO
+function scheduleNotification(message) {
+  const [hours, minutes] = message.scheduledTime.split(":").map(Number);
+  const now = new Date();
+  const scheduledDate = new Date(now);
+  scheduledDate.setHours(hours, minutes, 0, 0);
+
+  if (scheduledDate < now) {
+    scheduledDate.setDate(scheduledDate.getDate() + 1);
+  }
+
+  const timeToNotify = scheduledDate - now;
+
+  console.log(`Scheduling notification for ${message.scheduledTime} in ${timeToNotify}ms (at ${scheduledDate.toLocaleString()})`);
+
+  setTimeout(() => {
+    console.log("Notification triggered for:", message.message);
+    if (Notification.permission === "granted") {
+      new Notification(`Reminder from ${message.name}`, {
+        body: message.message,
+        icon: message.avatar || "https://via.placeholder.com/50",
+      });
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+          new Notification(`Reminder from ${message.name}`, {
+            body: message.message,
+            icon: message.avatar || "https://via.placeholder.com/50",
+          });
+        } else {
+          alert(`Reminder from ${message.name}: ${message.message}`);
+        }
+      });
+    } else {
+      alert(`Reminder from ${message.name}: ${message.message}`);
+    }
+  }, timeToNotify);
+}
+
+// Yêu cầu quyền thông báo khi tải trang
+document.addEventListener("DOMContentLoaded", () => {
+  if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+    Notification.requestPermission().then(permission => {
+      console.log("Notification permission:", permission);
+    });
+  }
+});

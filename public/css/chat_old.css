@@ -182,8 +182,6 @@ body {
   transition: linear 0.2s;
 }
 
-
-
 /* ------------AVATAR - TIME---------------- */
 
 /* Định dạng chung cho timestamp */
@@ -202,7 +200,7 @@ body {
   transform: translateY(-50%); /* Căn giữa chính xác */
   padding: 3px;
   background: rgba(255, 255, 255, 0.2); /* Nền trắng trong suốt */
-  border: 1px solid #ffffff; /* Viền trắng */
+  /* border: 1px solid #ffffff; Viền trắng */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Bóng nhẹ */
 }
 
@@ -309,19 +307,21 @@ body {
   cursor: pointer; /* Hiển thị con trỏ chuột khi hover */
 }
 
-
 h1 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 2.5rem;
   font-weight: 600;
   text-align: center;
   color: #ffffff;
-  text-shadow: 
-    0 0 5px #a777e3,
-    0 0 10px #a777e3,
-    0 0 20px #6e8efb,
+  text-shadow: 0 0 5px #a777e3, 0 0 10px #a777e3, 0 0 20px #6e8efb,
     0 0 40px #6e8efb;
   margin: 20px 0;
   letter-spacing: 2px;
-  
+}
+
+/* ============TIME ALERT=============== */
+.scheduled-time {
+  color: #00ff00;
+  margin-left: 5px;
+  font-size: 0.8em;
 }
