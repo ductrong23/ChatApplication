@@ -64,13 +64,6 @@ h1 {
 }
 
 /* ==========LOG OUT=========== */
-/* .list_user {
-    background-color: #333;
-    padding: 15px;
-    border-radius: 8px;
-    width: 300px;
-    color: white;
-}
 
 /* Phần chào người dùng */
 .user_greeting {
@@ -139,7 +132,7 @@ h1 {
 
 /* ========IMAGE======= */
 #ip_image {
-  display: none; /* Ẩn input file */
+  display: none;
 }
 
 .custom_file_upload {
@@ -149,7 +142,7 @@ h1 {
   background-color: #007bff;
   color: white;
   padding: 10px 15px;
-  /* border-radius: 5px; */
+
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.3s;
@@ -158,8 +151,6 @@ h1 {
 .custom_file_upload:hover {
   background-color: #0056b3;
 }
-
-
 
 /* ----------INTRO----------- */
 .chat-intro {

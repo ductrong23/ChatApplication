@@ -54,8 +54,8 @@ body {
   width: 100%;
   height: 90%;
   overflow: scroll;
-  width: calc(100% - 10px); /* Giảm 10px để trừ đi 5px mỗi bên */
-  padding: 5px; /* Thêm padding để các tin nhắn không sát lề */
+  width: calc(100% - 10px); 
+  padding: 5px; 
 }
 
 #ul_message li {
@@ -75,29 +75,22 @@ body {
     rgb(204, 0, 255),
     rgb(220, 110, 235)
   );
-  /* margin-top: 5px; */
+ 
   padding: 8px;
   color: white;
   border-radius: 15px;
   float: left;
   clear: both;
-  margin-left: 5px; /* Cách lề trái 5px */
-  margin-right: 5px; /* Cách lề phải 5px */
+  margin-left: 5px; 
+  margin-right: 5px; 
 }
 
 /* Tin nhắn bên trái */
 .right {
-  /* float: right !important; */
   flex-direction: row-reverse;
-  /* background-image: linear-gradient(to right, blue, purple); */
-  margin-left: 5px; /* Cách lề trái 5px */
-  margin-right: 5px; /* Cách lề phải 5px */
+  margin-left: 5px; 
+  margin-right: 5px;
 }
-
-/* .right .choose_emotion{
-  right: calc(100%);
-  left: auto; 
-} */
 
 .right .choose_emotion .emotions {
   right: 30px;
@@ -108,7 +101,6 @@ body {
   width: 25%;
   list-style: none;
   padding: 20px;
-  /* background-color: azure; */
   background-color: #1c1e21;
   height: 100vh;
   overflow: scroll;
@@ -126,20 +118,10 @@ body {
   display: flex;
 }
 
-/* .choose_emotion {
-  margin: 0 5px;
-  display: none !important;
-  position: relative;
-}
-
-#ul_message li:hover .choose_emotion {
-  display: block !important;
-  cursor: pointer;
-} */
 
 /* Icon chọn emotion ẩn mặc định */
 .choose_emotion {
-  display: none; /* Ẩn mặc định, không cần !important nếu không bị ghi đè */
+  display: none;
   position: absolute;
   top: 35%;
   transform: translateY(-50%);
@@ -172,7 +154,7 @@ body {
   position: absolute;
   bottom: 20px;
   display: flex;
-  border: 1px solid #ffffff; /* Viền trắng */
+  /* border: 1px solid #ffffff;  */
 }
 
 .emotions i:hover {
@@ -398,3 +380,4 @@ h1 {
   left: -55px; /* Đặt icon bên trái tin nhắn của mình */
   right: auto;
 }
+

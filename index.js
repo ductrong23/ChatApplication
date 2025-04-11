@@ -8,12 +8,6 @@ const accountModel = require("./models/account.model");
 // Blacklist
 const sensitiveWordModel = require("./models/sensitiveWord.model");
 // Dich tin nhan
-// const { Translate } = require("@google-cloud/translate").v2;
-// const translate = new Translate({ key: "YOUR_API_KEY" });
-// Dich tin nhan (miễn phí)
-// const translate = require("translate");
-// translate.engine = "google"; // Dùng engine Google miễn phí
-// translate.key = null; // Không cần key
 const translate = require("@iamtraction/google-translate");
 // ===========================
 
@@ -32,7 +26,6 @@ app.use(express.static("public"));
 
 app.set("view engine", "ejs");
 app.set("views", "views");
-
 
 io.on("connection", function (client) {
   console.log("Have connected device");
@@ -53,6 +46,7 @@ io.on("connection", function (client) {
       console.error("Error in join event:", error);
     }
   });
+
 
   // XỬ LÝ TIN NHẮN NHẬN ĐƯỢC TỪ CLIENT => TRẢ LẠI VỀ CHO CLIENT
   client.on("message", async function (data) {
@@ -160,7 +154,6 @@ io.on("connection", function (client) {
 
       console.log("Sending to client:", JSON.stringify(obj)); // Thêm log
       io.to(room).emit("thread", JSON.stringify(obj));
-
     } catch (error) {
       console.error("Error handling message:", error);
     }
@@ -192,6 +185,11 @@ connectDB();
 router(app);
 
 // SERVER HOẠT ĐỘNG TRÊN PORT 5000
-server.listen(5000, () => {
-  console.log("Server is running on port 5000");
+// server.listen(5000, () => {
+//   console.log("Server is running on port 5000");
+// });
+
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server is running on port ${PORT}`);
 });

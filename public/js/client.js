@@ -7,6 +7,7 @@ const btn_send = document.getElementById("btn_send");
 const ul_message = document.getElementById("ul_message");
 const btn_logout = document.getElementById("btn_logout");
 
+
 var socket = io.connect();
 
 // LẤY USERNAME
@@ -104,7 +105,7 @@ btn_join.addEventListener("click", async () => {
       
         <i onclick="show(event, '${
           msg._id
-        }')" class="choose_emotion fa-solid fa-face-smile" style="color: gray; border-radius: 50%; background: rgba(255, 255, 255, 0.2); border: 1px solid #ffffff;"></i>
+        }')" class="choose_emotion fa-solid fa-face-smile" style="color: gray; border-radius: 50%; background: rgba(255, 255, 255, 0.2);"></i>
       
         <i onclick="reportSensitiveWord(event, '${
           msg._id
@@ -257,7 +258,7 @@ socket.on("thread", function (data) {
    
     <i onclick="show(event, '${
       obj._id
-    }')" class="choose_emotion fa-solid fa-face-smile" style="color: gray; border-radius: 50%; background: rgba(255, 255, 255, 0.2); border: 1px solid #ffffff;"></i>
+    }')" class="choose_emotion fa-solid fa-face-smile" style="color: gray; border-radius: 50%; background: rgba(255, 255, 255, 0.2);"></i>
 
     <i onclick="reportSensitiveWord(event, '${
       obj._id
@@ -545,3 +546,4 @@ function showTranslation(messageId, translatedText, originalText) {
     textElement.style.display = "inline-block";
   }
 }
+

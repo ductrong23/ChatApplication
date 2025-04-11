@@ -41,10 +41,11 @@ module.exports = {
       .findOne({ username })
       .populate("friends")
       .populate("friendRequests");
-    console.log("Current user language:", currentUser.language); // Thêm log để kiểm tra
+
     if (!username || !currentUser) {
       return res.redirect("/login");
     }
+    console.log("Current user language:", currentUser.language); // Thêm log để kiểm tra
     return res.render("chat.ejs", {
       accounts: accounts,
       currentUser: currentUser || { friends: [], friendRequests: [] },

@@ -20,21 +20,26 @@
     <div class="user_greeting">
       <img src="<%= currentUser.avatar %>" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;" />
       <span id="current_user_fullname"><%= currentUser.full_name %></span> <!-- Lấy từ currentUser -->
-      <select id="language-select" onchange="changeLanguage(this.value)">
+      <!-- <select id="language-select" onchange="changeLanguage(this.value)">
         <option value="en" <%= currentUser.language === 'en' ? 'selected' : '' %>>English</option>
         <option value="vi" <%= currentUser.language === 'vi' ? 'selected' : '' %>>Tiếng Việt</option>
-        <!-- Thêm ngôn ngữ khác nếu cần -->
-      </select>
+      </select> -->
       <button id="btn_logout">Logout</button>
     </div>
 
+    <h3 style="color: white; margin-top: 10%">Your Language</h3>
+    <select id="language-select" onchange="changeLanguage(this.value)">
+      <option value="en" <%= currentUser.language === 'en' ? 'selected' : '' %>>English</option>
+      <option value="vi" <%= currentUser.language === 'vi' ? 'selected' : '' %>>Tiếng Việt</option>
+      <!-- Thêm ngôn ngữ khác nếu cần -->
+    </select>
 
     <!-- LẤY DANH SÁCH LỜI MỜI KẾT BẠN -->
     <h3 style="color: white; margin-top: 10%">Friend Requests</h3>
     <% currentUser.friendRequests.forEach(request => { %>
     <li>
       <p class="user_item">
-        <img src="<%= request.avatar %>" alt="Avatar" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 5px;" />
+        <img src="<%= request.avatar %>" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 5px;" />
         <%= request.full_name %>
         <button onclick="acceptFriendRequest('<%= request.username %>')">Accept</button>
       </p>
@@ -46,7 +51,7 @@
     <% currentUser.friends.forEach(friend => { %>
     <li>
       <p class="user_item" onclick="startChat('<%= friend.username %>')">
-        <img src="<%= friend.avatar %>" alt="Avatar" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 5px;" />
+        <img src="<%= friend.avatar %>" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 5px;" />
         <%= friend.full_name %>
         <i class="fa-solid fa-circle" style="color: green; font-size: 10px"></i>
       </p>
@@ -60,7 +65,7 @@
     <% accounts.forEach(account => { %>
     <li>
       <p class="user_item">
-        <img src="<%= account.avatar %>" alt="Avatar" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 5px;" />
+        <img src="<%= account.avatar %>" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 5px;" />
         <%= account.full_name %>
         <% if (account.username !== currentUser.username) { %>
           <button onclick="startChat('<%= account.username %>')"><i class="fa-brands fa-rocketchat"></i></button>
@@ -107,6 +112,10 @@
         <i class="fa-solid fa-shield-alt"></i>
         <p>Report sensitive content for a safe environment</p>
       </div>
+      <div class="feature-item">
+        <i class="fa-solid fa-language"></i>
+        <p>Translate messages on-demand with a single click</p>
+      </div>
     </div>
     <p class="call-to-action">Join a room now and start chatting with ease!</p>
   </div>
@@ -124,6 +133,7 @@
     <input type="file" id="ip_image" />
       <button id="btn_send">Send</button>
     </div>
+
   </div>
 </div>
 
@@ -144,6 +154,7 @@
   localStorage.setItem("language", "<%= currentUser.language || 'en' %>");
 </script>
 
+<!-- HAM DICH NGON NGU -->
 <script>
   function changeLanguage(lang) {
     localStorage.setItem("language", lang);
