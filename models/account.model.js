@@ -33,6 +33,11 @@ const accountSchema = mongoose.Schema(
         ref: "account", // Lưu danh sách lời mời kết bạn đang chờ
       },
     ],
+    language: {
+      type: String,
+      default: "en", // Ngôn ngữ mặc định
+    },
+    rooms: [String], // Danh sách room người dùng tham gia
   },
   {
     versionKey: false,

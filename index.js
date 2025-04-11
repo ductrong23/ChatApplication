@@ -7,6 +7,14 @@ const messageModel = require("./models/message.model");
 const accountModel = require("./models/account.model");
 // Blacklist
 const sensitiveWordModel = require("./models/sensitiveWord.model");
+// Dich tin nhan
+// const { Translate } = require("@google-cloud/translate").v2;
+// const translate = new Translate({ key: "YOUR_API_KEY" });
+// Dich tin nhan (miễn phí)
+// const translate = require("translate");
+// translate.engine = "google"; // Dùng engine Google miễn phí
+// translate.key = null; // Không cần key
+const translate = require("@iamtraction/google-translate");
 // ===========================
 
 const express = require("express");
@@ -25,6 +33,7 @@ app.use(express.static("public"));
 app.set("view engine", "ejs");
 app.set("views", "views");
 
+
 io.on("connection", function (client) {
   console.log("Have connected device");
   var room; //CHAT ROOM
@@ -32,8 +41,14 @@ io.on("connection", function (client) {
   // Tham gia chat
   client.on("join", async function (data) {
     try {
-      room = data.room;
+      room = data.room; // Lấy room từ data
+      const username = data.username; // Lấy username từ data
       client.join(room);
+      await accountModel.updateOne(
+        { username: username }, // Sử dụng username thay vì obj.name
+        { $addToSet: { rooms: room } }
+      );
+      console.log(`${username} joined room ${room}`);
     } catch (error) {
       console.error("Error in join event:", error);
     }
@@ -74,8 +89,54 @@ io.on("connection", function (client) {
         );
       });
 
+      // // Dịch tin nhắn sang ngôn ngữ của room (hoặc tất cả người nhận)
+      // const roomUsers = await accountModel.find({ rooms: room }); // Giả sử có trường 'rooms'
+      // let translations = {};
+      // for (let user of roomUsers) {
+      //   if (
+      //     user.username !== obj.name &&
+      //     user.language &&
+      //     user.language !== senderLang
+      //   ) {
+      //     const [translated] = await translate.translate(
+      //       filteredMessage,
+      //       user.language
+      //     );
+      //     translations[user.language] = translated;
+      //   }
+      // }
+      // Dịch tin nhắn
+      const roomUsers = await accountModel.find({ rooms: room });
       // Lấy thông tin người gửi
       const senderAccount = await accountModel.findOne({ username: obj.name });
+      const senderLang = senderAccount?.language || "en"; // Ngôn ngữ mặc định: tiếng Anh
+      let translations = {};
+      for (let user of roomUsers) {
+        if (
+          user.username !== obj.name &&
+          user.language &&
+          user.language !== senderLang &&
+          filteredMessage !==
+            (await translate(filteredMessage, { to: user.language })).text
+        ) {
+          console.log(`Translating "${filteredMessage}" to ${user.language}`);
+          try {
+            const translated = (
+              await translate(filteredMessage, { to: user.language })
+            ).text;
+            console.log(`Translated to ${user.language}: "${translated}"`);
+            translations[user.language] = translated;
+          } catch (error) {
+            console.error(`Error translating to ${user.language}:`, error);
+            translations[user.language] = filteredMessage;
+          }
+        } else {
+          console.log(
+            `No translation needed for ${user.username} (lang: ${user.language})`
+          );
+        }
+      }
+
       // Lưu tin nhắn vào database và lấy _id
       const savedMessage = await messageModel.create({
         room: room,
@@ -87,6 +148,7 @@ io.on("connection", function (client) {
           : "https://via.placeholder.com/50", // Lưu avatar vào tin nhắn
         scheduledTime: scheduledTime, // Thêm trường scheduledTime
         timestamp: now, // Lưu thời gian gửi thực tế
+        translations: translations, // Lưu bản dịch
       });
 
       // Thêm _id vào obj để gửi về client
@@ -94,8 +156,11 @@ io.on("connection", function (client) {
       obj.message = filteredMessage;
       obj.avatar = savedMessage.avatar;
       obj.scheduledTime = scheduledTime; // Gửi scheduledTime về client
+      obj.translations = translations; // Gửi bản dịch về client
 
+      console.log("Sending to client:", JSON.stringify(obj)); // Thêm log
       io.to(room).emit("thread", JSON.stringify(obj));
+
     } catch (error) {
       console.error("Error handling message:", error);
     }

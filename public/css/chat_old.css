@@ -146,6 +146,8 @@ body {
   cursor: pointer;
 }
 
+
+
 /* Hiện icon khi hover vào li */
 #ul_message li:hover .choose_emotion {
   display: block; /* Hiện khi hover */
@@ -324,4 +326,75 @@ h1 {
   color: #00ff00;
   margin-left: 5px;
   font-size: 0.8em;
+}
+
+/* ---------TRANSLATE------------ */
+
+.original-message {
+  color: white;
+  font-size: 0.8em;
+  margin-left: 5px;
+  z-index: 1000;
+}
+/* 
+.translate-icon {
+  font-size: 16px;
+  vertical-align: middle;
+}
+.translation-text {
+  color: #007bff;
+} */
+
+
+/* -------REPORT--------- */
+.report_sensitive {
+  display: none; /* Ẩn mặc định, không cần !important nếu không bị ghi đè */
+  position: absolute;
+  top: 35%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6e8efb;
+}
+
+/* Hiện icon khi hover vào li */
+#ul_message li:hover .report_sensitive {
+  display: block; /* Hiện khi hover */
+}
+
+/* Vị trí icon cho tin nhắn của người khác (bên trái) */
+.message-container .report_sensitive {
+  right: -55px; /* Đặt icon bên phải tin nhắn của người khác */
+}
+
+/* Vị trí icon cho tin nhắn của mình (bên phải) */
+.right .message-container .report_sensitive {
+  left: -55px; /* Đặt icon bên trái tin nhắn của mình */
+  right: auto;
+}
+
+
+/* -------TRANSLATE--------- */
+.translate-icon {
+  display: none; 
+  position: absolute;
+  top: 35%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6e8efb;
+}
+
+/* Hiện icon khi hover vào li */
+#ul_message li:hover .translate-icon {
+  display: block; /* Hiện khi hover */
+}
+
+/* Vị trí icon cho tin nhắn của người khác (bên trái) */
+.message-container .translate-icon {
+  right: -55px; /* Đặt icon bên phải tin nhắn của người khác */
+}
+
+/* Vị trí icon cho tin nhắn của mình (bên phải) */
+.right .message-container .translate-icon {
+  left: -55px; /* Đặt icon bên trái tin nhắn của mình */
+  right: auto;
 }

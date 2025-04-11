@@ -47,7 +47,8 @@ socket.on("connect", function () {
 // LẤY ID PHÒNG NGƯỜI DÙNG NHẬP GỬI LÊN SERVER
 btn_join.addEventListener("click", async () => {
   const room = ip_room.value;
-  socket.emit("join", { room });
+  // socket.emit("join", { room });
+  socket.emit("join", { room, username: localStorage.getItem("username") });
   alert(`Join room ${room} success`);
 
   try {
@@ -90,23 +91,26 @@ btn_join.addEventListener("click", async () => {
         
         <span id="${msg._id}" class="content">
 
-          <p style="display: inline-block; vertical-align: middle;">${
-            msg.message.startsWith("https")
-              ? `<img style="width: 200px; background-color: none" src="${msg.message}">`
-              : msg.message
-          }</p>
+        <p style="display: inline-block; vertical-align: middle;">${
+          msg.message.startsWith("https")
+            ? `<img style="width: 200px; background-color: none" src="${msg.message}">`
+            : msg.message
+        }</p>
 
-          <small class="timestamp">${time}</small>
-            ${emotionHTML}
+        <small class="timestamp">${time}</small>
+          ${emotionHTML}
             
         </span>
+      
         <i onclick="show(event, '${
           msg._id
         }')" class="choose_emotion fa-solid fa-face-smile" style="color: gray; border-radius: 50%; background: rgba(255, 255, 255, 0.2); border: 1px solid #ffffff;"></i>
-      <!-- Thêm nút báo cáo -->
+      
         <i onclick="reportSensitiveWord(event, '${
           msg._id
-        }')" class="report_sensitive fa-solid fa-flag" style="color: red; margin-left: 5px; cursor: pointer;"></i>
+        }')" class="report_sensitive fa-solid fa-circle-exclamation" style=""></i>
+      
+
         </div>
         `;
 
@@ -199,9 +203,18 @@ ip_message.addEventListener("keydown", (event) => {
 // NHẬN TIN NHẮN TỪ SERVER TRẢ VỀ
 socket.on("thread", function (data) {
   const obj = JSON.parse(data);
+  console.log("Received data:", obj);
+  console.log("Translations:", obj.translations);
   my_name = localStorage.getItem("username"); // Cập nhật lại my_name khi nhận tin nhắn mới
-  console.log("Received message, current user:", my_name); // Log để kiểm tra
-  console.log("Received thread event:", obj);
+  const my_language = localStorage.getItem("language") || "en"; // Lấy từ localStorage
+  console.log("My language:", my_language); // Log ngôn ngữ của client
+  const translatedMessage =
+    obj.translations && obj.translations[my_language]
+      ? obj.translations[my_language]
+      : obj.message;
+  console.log("Translated message:", translatedMessage);
+
+
   const li = document.createElement("li");
 
   li.innerHTML = `
@@ -213,32 +226,49 @@ socket.on("thread", function (data) {
           }" alt="Avatar" class="avatar">`
         : ""
     }
-        <span id="${obj._id}" class="content"> <!-- Sử dụng _id từ database -->
 
-      <p style="display: inline-block; vertical-align: middle;">${
-        obj.message.startsWith("https")
-          ? '<img style="width: 200px; background-color: none" src="' +
-            obj.message +
-            '">'
-          : obj.message
-      }</p>
-      
-      <small class="timestamp">${obj.time}</small>
+    <span id="${obj._id}" class="content"> <!-- Sử dụng _id từ database -->
 
-      
+    <p style="display: inline-block; vertical-align: middle;" class="message-text">
+          ${
+            obj.message.startsWith("https")
+              ? '<img style="width: 200px; background-color: none" src="' +
+                obj.message +
+                '">'
+              : obj.message // Hiển thị tin nhắn gốc mặc định
+          }
+    </p>
+        
+    ${
+      obj.translations && obj.translations[my_language]
+        ? `<i class="translate-icon fa-solid fa-language" style="" onclick="showTranslation('${obj._id}', '${translatedMessage}', '${obj.message}')"></i>`
+        : ""
+    }
+
+    ${
+      obj.scheduledTime
+        ? `<small class="scheduled-time"> (Scheduled: ${obj.scheduledTime})</small>`
+        : ""
+    }
+    
+    <small class="timestamp">${obj.time}</small>
+
     </span>
+   
     <i onclick="show(event, '${
       obj._id
     }')" class="choose_emotion fa-solid fa-face-smile" style="color: gray; border-radius: 50%; background: rgba(255, 255, 255, 0.2); border: 1px solid #ffffff;"></i>
 
-    <!-- Thêm nút báo cáo -->
     <i onclick="reportSensitiveWord(event, '${
       obj._id
-    }')" class="report_sensitive fa-solid fa-flag" style="color: red; margin-left: 5px; cursor: pointer;"></i>
- 
+    }')" class="report_sensitive fa-solid fa-circle-exclamation"></i>
+
     </div>
     `;
 
+  console.log("Received:", obj);
+  console.log("My language:", my_language);
+  console.log("Translated message:", translatedMessage);
   // Nếu tin của mình thì ở bên phải
   if (obj.name === my_name) {
     li.classList.add("right");
@@ -247,19 +277,22 @@ socket.on("thread", function (data) {
   ul_message.appendChild(li);
   ul_message.scrollTop = ul_message.scrollHeight;
 
-  // // Nếu có scheduledTime, lên lịch thông báo
-  // if (obj.scheduledTime) {
-  //   scheduleNotification(obj);
-  // }
   // Kiểm tra và lên lịch thông báo
   if (obj.scheduledTime) {
-    console.log("Message has scheduledTime, calling scheduleNotification:", obj.scheduledTime);
+    console.log(
+      "Message has scheduledTime, calling scheduleNotification:",
+      obj.scheduledTime
+    );
     scheduleNotification(obj);
   } else {
     console.log("No scheduledTime detected in message");
   }
-
 });
+
+// // Lưu ngôn ngữ khi tải trang
+// document.addEventListener("DOMContentLoaded", () => {
+//   localStorage.setItem("language", "<%= currentUser.language || 'en' %>");
+// });
 
 // HÀM ẨN HIỆN EMOTIONS KHI TRỎ VÀO
 function show(e, id) {
@@ -436,7 +469,6 @@ window.reportSensitiveWord = function (e, messageId) {
     });
 };
 
-
 // HAM LEN LICH THONG BAO
 function scheduleNotification(message) {
   const [hours, minutes] = message.scheduledTime.split(":").map(Number);
@@ -450,7 +482,11 @@ function scheduleNotification(message) {
 
   const timeToNotify = scheduledDate - now;
 
-  console.log(`Scheduling notification for ${message.scheduledTime} in ${timeToNotify}ms (at ${scheduledDate.toLocaleString()})`);
+  console.log(
+    `Scheduling notification for ${
+      message.scheduledTime
+    } in ${timeToNotify}ms (at ${scheduledDate.toLocaleString()})`
+  );
 
   setTimeout(() => {
     console.log("Notification triggered for:", message.message);
@@ -460,7 +496,7 @@ function scheduleNotification(message) {
         icon: message.avatar || "https://via.placeholder.com/50",
       });
     } else if (Notification.permission !== "denied") {
-      Notification.requestPermission().then(permission => {
+      Notification.requestPermission().then((permission) => {
         if (permission === "granted") {
           new Notification(`Reminder from ${message.name}`, {
             body: message.message,
@@ -478,9 +514,34 @@ function scheduleNotification(message) {
 
 // Yêu cầu quyền thông báo khi tải trang
 document.addEventListener("DOMContentLoaded", () => {
-  if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-    Notification.requestPermission().then(permission => {
+  if (
+    Notification.permission !== "granted" &&
+    Notification.permission !== "denied"
+  ) {
+    Notification.requestPermission().then((permission) => {
       console.log("Notification permission:", permission);
     });
   }
 });
+
+// Hàm hiển thị bản dịch khi nhấp vào icon
+function showTranslation(messageId, translatedText, originalText) {
+  const messageElement = document.getElementById(messageId);
+  const textElement = messageElement.querySelector(".message-text");
+  const translationElement = messageElement.querySelector(".translation-text");
+
+  if (!translationElement) {
+    // Nếu chưa có phần hiển thị bản dịch, thêm vào
+    const translationSpan = document.createElement("span");
+    translationSpan.className = "translation-text";
+    translationSpan.innerHTML =
+      translatedText +
+      ` <small class="original-message">(Original: ${originalText})</small>`;
+    textElement.style.display = "none"; // Ẩn tin nhắn gốc
+    messageElement.insertBefore(translationSpan, textElement.nextSibling);
+  } else {
+    // Nếu đã có, xóa bản dịch và hiện lại tin gốc
+    translationElement.remove();
+    textElement.style.display = "inline-block";
+  }
+}

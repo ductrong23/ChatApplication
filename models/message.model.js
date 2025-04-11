@@ -36,6 +36,11 @@ const messageSchema = mongoose.Schema(
       required: false, // Không bắt buộc vì không phải tin nhắn nào cũng có emotion
       default: null, // Giá trị mặc định là null nếu không có emotion
     },
+    translations: {
+      type: Map,
+      of: String, // Lưu bản dịch theo ngôn ngữ (ví dụ: { "vi": "Xin chào", "en": "Hello" })
+      default: {},
+    },
   },
   {
     versionKey: false,

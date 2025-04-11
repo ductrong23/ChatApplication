@@ -115,7 +115,6 @@ h1 {
   border-bottom: none;
 }
 
-
 /* ============ */
 .user_item {
   display: flex;
@@ -138,7 +137,6 @@ h1 {
   margin-left: auto; /* Đẩy icon trạng thái sang phải */
 }
 
-
 /* ========IMAGE======= */
 #ip_image {
   display: none; /* Ẩn input file */
@@ -159,4 +157,110 @@ h1 {
 
 .custom_file_upload:hover {
   background-color: #0056b3;
+}
+
+
+
+/* ----------INTRO----------- */
+.chat-intro {
+  animation: slideIn 0.5s ease-out;
+}
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.chat-intro {
+  background: linear-gradient(
+    135deg,
+    #1c1e21 0%,
+    #2c2e31 100%
+  ); /* Gradient nền */
+  border-radius: 15px;
+
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Đổ bóng nhẹ */
+  text-align: center;
+}
+
+.intro-header h2 {
+  font-size: 28px;
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+}
+
+.intro-header h2 span {
+  color: #00ccff; /* Màu nổi bật cho tên app */
+}
+
+.intro-header .tagline {
+  font-size: 16px;
+  color: #b0b0b0;
+  margin: 5px 0 15px;
+}
+
+.intro-content p {
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0 0 15px;
+}
+
+.intro-content strong {
+  color: #00ccff;
+}
+
+.features {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.feature-item {
+  flex: 1 1 45%; /* 2 cột trên desktop, 1 cột trên mobile */
+  max-width: 200px;
+  margin: 10px;
+  text-align: center;
+}
+
+.feature-item i {
+  font-size: 24px;
+  color: #00ccff;
+  margin-bottom: 10px;
+}
+
+.feature-item p {
+  font-size: 14px;
+  margin: 0;
+  color: #d0d0d0;
+}
+
+.call-to-action {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff;
+  background: #00ccff;
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 25px;
+  margin-top: 15px;
+  transition: background 0.3s ease;
+}
+
+.call-to-action:hover {
+  background: #0099cc;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .feature-item {
+    flex: 1 1 100%;
+    max-width: none;
+  }
 }
