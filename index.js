@@ -47,19 +47,17 @@ io.on("connection", function (client) {
     }
   });
 
-
   // XỬ LÝ TIN NHẮN NHẬN ĐƯỢC TỪ CLIENT => TRẢ LẠI VỀ CHO CLIENT
   client.on("message", async function (data) {
     try {
       const obj = JSON.parse(data);
-      const now = new Date();
-      // obj.time =
-      //   now.getHours().toString().padStart(2, "0") +
-      //   ":" +
-      //   now.getMinutes().toString().padStart(2, "0");
-      obj.timestamp = savedMessage.timestamp; // Gửi timestamp thay vì obj.time
-      // console.log("Received message:", obj);
-
+  
+      // Lấy thông tin người gửi
+      const senderAccount = await accountModel.findOne({ username: obj.name });
+      if (!senderAccount) {
+        throw new Error("Sender account not found");
+      }
+  
       // Nhận diện thời gian trong tin nhắn (định dạng HH:MM)
       const timeRegex = /(\d{1,2}:\d{2})/;
       const timeMatch = obj.message.match(timeRegex);
@@ -68,42 +66,24 @@ io.on("connection", function (client) {
         scheduledTime = timeMatch[0]; // Ví dụ: "15:00"
         console.log("Detected scheduled time:", scheduledTime);
       }
-
+  
       // Lấy danh sách từ nhạy cảm trong blacklist
       const blacklistedWords = await sensitiveWordModel.find({
         status: "blacklisted",
       });
       let filteredMessage = obj.message;
-
+  
       // Thay thế từ nhạy cảm bằng dấu *
       blacklistedWords.forEach((wordObj) => {
-        const regex = new RegExp(`\\b${wordObj.word}\\b`, "gi"); // Tìm từ độc lập, không phân biệt hoa thường
+        const regex = new RegExp(`\\b${wordObj.word}\\b`, "gi");
         filteredMessage = filteredMessage.replace(
           regex,
           "*".repeat(wordObj.word.length)
         );
       });
-
-      // // Dịch tin nhắn sang ngôn ngữ của room (hoặc tất cả người nhận)
-      // const roomUsers = await accountModel.find({ rooms: room }); // Giả sử có trường 'rooms'
-      // let translations = {};
-      // for (let user of roomUsers) {
-      //   if (
-      //     user.username !== obj.name &&
-      //     user.language &&
-      //     user.language !== senderLang
-      //   ) {
-      //     const [translated] = await translate.translate(
-      //       filteredMessage,
-      //       user.language
-      //     );
-      //     translations[user.language] = translated;
-      //   }
-      // }
+  
       // Dịch tin nhắn
       const roomUsers = await accountModel.find({ rooms: room });
-      // Lấy thông tin người gửi
-      const senderAccount = await accountModel.findOne({ username: obj.name });
       const senderLang = senderAccount?.language || "en"; // Ngôn ngữ mặc định: tiếng Anh
       let translations = {};
       for (let user of roomUsers) {
@@ -131,30 +111,29 @@ io.on("connection", function (client) {
           );
         }
       }
-
+  
       // Lưu tin nhắn vào database và lấy _id
       const savedMessage = await messageModel.create({
         room: room,
         sender: obj.name,
-        // message: obj.message,
-        message: filteredMessage, // Duyet tu ngu nhay cam
+        message: filteredMessage,
         avatar: senderAccount
           ? senderAccount.avatar
-          : "https://via.placeholder.com/50", // Lưu avatar vào tin nhắn
-        scheduledTime: scheduledTime, // Thêm trường scheduledTime
-        // timestamp: now, // Lưu thời gian gửi thực tế
-        timestamp: new Date(), // Lưu timestamp
-        translations: translations, // Lưu bản dịch
+          : "https://via.placeholder.com/50",
+        scheduledTime: scheduledTime,
+        timestamp: new Date(),
+        translations: translations,
       });
-
-      // Thêm _id vào obj để gửi về client
+  
+      // Thêm thông tin vào obj để gửi về client
       obj._id = savedMessage._id;
       obj.message = filteredMessage;
       obj.avatar = savedMessage.avatar;
-      obj.scheduledTime = scheduledTime; // Gửi scheduledTime về client
-      obj.translations = translations; // Gửi bản dịch về client
-
-      console.log("Sending to client:", JSON.stringify(obj)); // Thêm log
+      obj.scheduledTime = savedMessage.scheduledTime;
+      obj.timestamp = savedMessage.timestamp; // Gửi timestamp sau khi savedMessage được khởi tạo
+      obj.translations = savedMessage.translations;
+  
+      console.log("Sending to client:", JSON.stringify(obj));
       io.to(room).emit("thread", JSON.stringify(obj));
     } catch (error) {
       console.error("Error handling message:", error);

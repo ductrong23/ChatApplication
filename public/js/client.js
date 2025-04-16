@@ -253,8 +253,6 @@ socket.on("thread", function (data) {
         ? `<small class="scheduled-time"> (Scheduled: ${obj.scheduledTime})</small>`
         : ""
     }
-    
-    // <small class="timestamp">${obj.time}</small>
 
     <small class="timestamp">${time}</small>
 
