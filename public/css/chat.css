@@ -1,149 +1,428 @@
-/* Định dạng chung cho giao diện phòng chat */
+body,
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: linear-gradient(135deg, #f8fafc, #e6f0fa);
+}
+
+.container {
+  width: 75%;
+  height: 98.5vh;
+  margin: 0 auto;
+  box-sizing: border-box;
+  background-color: #2a2e35;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.container_join {
+  width: 100%;
+  height: 6%;
+  display: flex;
+}
+
+.container_join input {
+  width: 80%;
+  padding: 12px;
+  color: cornflowerblue;
+  border: 1px solid cornflowerblue;
+  font-size: 14px;
+}
+
+.container_join button {
+  width: 20%;
+  padding: 12px;
+  background-color: cornflowerblue;
+  color: white;
+  border: none;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.container_join button:hover {
+  background-color: #0056b3;
+  cursor: pointer;
+}
+
+.container_send {
+  width: 100%;
+  height: 6%;
+  display: flex;
+}
+
+#ip_message {
+  width: 70%;
+  padding: 12px;
+  color: black;
+  border: 1px solid cornflowerblue;
+  font-size: 14px;
+}
+
+#ip_message :focus {
+  border: 1px solid cornflowerblue;
+}
+
+#btn_send {
+  width: 20%;
+  padding: 12px;
+  background-color: #32a6c4;
+  color: white;
+  /* border: none; */
+  border: 2px solid #32a6c4;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+#btn_send:hover {
+  background-color: #1e7e34;
+  cursor: pointer;
+}
+
+#ul_message {
+  list-style: none;
+  width: 100%;
+  height: 88%;
+  overflow: scroll;
+  width: calc(100% - 10px);
+  padding: 5px;
+}
+
+#ul_message li {
+  display: flex;
+  align-items: center;
+  margin-top: 9px;
+}
+
+#ul_message li span {
+  position: relative;
+  color: cornflowerblue;
+}
+
+#ul_message li span p {
+  width: fit-content;
+  background-image: linear-gradient(to right, #5b86e5, #36d1dc);
+  /* background-image: linear-gradient(
+    to right,
+    rgb(204, 0, 255),
+    rgb(220, 110, 235)
+  ); */
+  padding: 8px;
+  color: white;
+  border-radius: 15px;
+  float: left;
+  clear: both;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+/* Tin nhắn bên trái */
+.right {
+  flex-direction: row-reverse;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.right .choose_emotion .emotions {
+  right: 30px;
+}
+
+/* =============================LIST USER CSS=============================== */
 .list_user {
-    width: 250px;
-    background: #f4f4f4;
-    padding: 15px;
-    border-radius: 5px;
-    list-style: none;
-  }
-  
-  .list_user li {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .list_user li:last-child {
-    border-bottom: none;
-  }
-  
-  .container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 500px;
-    background: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-left: 20px;
-  }
-  
-  .container_join {
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .container_join input {
-    width: 70%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .container_join button {
-    padding: 10px;
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  #ul_message {
-    flex: 1;
-    overflow-y: auto;
-    list-style: none;
-    padding: 10px;
-  }
-  
-  #ul_message li {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    background: #e9ecef;
-    border-radius: 10px;
-    margin: 5px 0;
-    width: fit-content;;
-  }
-  
-  /* #ul_message li.right {
-    background: #007bff;
-    color: white;
-    justify-content: flex-end;
-  }
-   */
+  width: 25%;
+  list-style: none;
+  padding: 20px;
+  /* background-color: #2a2e35; */
+  background-color: cornflowerblue;
+  height: 100vh;
+  overflow: scroll;
+  box-sizing: border-box;
+}
 
-   #ul_message li.right {
-    margin-left: auto;
-    background: #007bff;
-    color: white;
-  }
+.list_user li {
+  background-color: #f1f3f5;
+  border-radius: 15px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
 
-  .choose_emotion {
-    margin-left: 10px;
-    cursor: pointer;
-  }
-  
-  .container_send {
-    display: flex;
-    align-items: center;
-    padding-top: 10px;
-    border-top: 1px solid #ddd;
-  }
-  
-  .container_send input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .container_send button {
-    padding: 10px;
-    background: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-left: 10px;
-  }
-  
+.list_user li div {
+  display: flex;
+}
 
+/* Icon chọn emotion ẩn mặc định */
+.choose_emotion {
+  display: none;
+  position: absolute;
+  top: 35%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #00c4ff;
+}
 
-  .choose_emotion {
-    /* visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out; */
-    margin: 0 5px;
-    display: none !important;
-    position: relative;
-  }
-  
-  #ul_message li:hover .choose_emotion {
-    display: block !important;
-    cursor: pointer;
-    /* visibility: visible;
-    opacity: 1; */
-  }
-  
-  .emotions {
-    background-color: rgb(250, 233, 233);
-    padding: 5px;
-    border-radius: 15px;
-    position: absolute;
-    bottom: 20px;
-    display: flex;
-  }
-  
-  .emotions i:hover{
-    transform: scale(1.5);
-  }
+/* Hiện icon khi hover vào li */
+#ul_message li:hover .choose_emotion {
+  display: block;
+}
 
-  .emotions i{
-    margin: 5px;
-    transition: linear 0.2s;
-  }
-  
+/* Vị trí icon cho tin nhắn của người khác (bên trái) */
+.message-container .choose_emotion {
+  right: -30px;
+}
+
+/* Vị trí icon cho tin nhắn của mình (bên phải) */
+.right .message-container .choose_emotion {
+  left: -30px;
+  right: auto;
+}
+
+.emotions {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 5px;
+  border-radius: 15px;
+  position: absolute;
+  bottom: 20px;
+  display: flex;
+  /* border: 1px solid rgba(255, 255, 255, 0.3); */
+  border: 1px solid black;
+}
+
+.emotions i:hover {
+  transform: scale(1.5);
+}
+
+.emotions i {
+  margin: 5px;
+  transition: linear 0.2s;
+}
+
+/* ------------AVATAR - TIME---------------- */
+.timestamp {
+  color: #b0b3b8;
+  font-size: 12px;
+  margin-top: 15px;
+  display: block;
+}
+
+/* Định dạng chung cho emotion trong .content */
+.content i {
+  position: absolute;
+  border-radius: 50%;
+  top: 80%;
+  transform: translateY(-50%);
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Emotion cho tin nhắn của người khác (bên trái) */
+.message-container .content i {
+  right: 5px;
+  left: auto;
+}
+
+/* Emotion cho tin nhắn của mình (bên phải) */
+.right .message-container .content i {
+  left: 5px;
+  right: auto;
+}
+
+/* Tin nhắn của người khác (bên trái) */
+.message-container .content .timestamp {
+  text-align: left;
+}
+
+/* Tin nhắn của mình (bên phải) */
+.right .message-container .content .timestamp {
+  text-align: right;
+}
+
+/* Đảm bảo nội dung tin nhắn không bị ảnh hưởng */
+.message-container .content {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.message-container {
+  display: flex;
+  align-items: flex-start;
+  margin: 10px 0;
+  position: relative;
+}
+
+.message-container .avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.message-container .content {
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+}
+
+/* Tin nhắn bên phải (của mình) không cần avatar */
+.right .message-container {
+  justify-content: flex-end;
+}
+
+.right .message-container .avatar {
+  display: none;
+}
+
+/* ============ADD - CHAT BUTTON============== */
+
+.user_item button {
+  padding: 5px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.user_item button:hover {
+  background-color: #218838;
+}
+
+.user_item .fa-brands:hover,
+.user_item .fa-solid:hover,
+.user_item button:hover {
+  cursor: pointer;
+  background-color: #17a2b8;
+  color: white;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+/* Định dạng chung cho .user_item */
+.user_item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  color: #343a40;
+}
+
+/* Hiệu ứng hover cho .user_item trong danh sách bạn bè */
+.list_user .user_item:hover {
+  cursor: pointer;
+}
+
+h1 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 2.5rem;
+  font-weight: 600;
+  text-align: center;
+  color: #ffffff;
+  text-shadow: 0 0 5px #00c4ff, 0 0 10px #00c4ff, 0 0 20px #007bff,
+    0 0 40px #007bff;
+  margin: 20px 0;
+  letter-spacing: 2px;
+}
+
+/* ============TIME ALERT=============== */
+.scheduled-time {
+  color: #00ff85;
+  margin-left: 5px;
+  font-size: 0.8em;
+}
+
+/* ---------TRANSLATE------------ */
+.original-message {
+  color: red;
+  font-size: 0.8em;
+  margin-left: 5px;
+  z-index: 1000;
+}
+
+.translation-test {
+  color: black;
+}
+/* -------REPORT--------- */
+.report_sensitive {
+  display: none;
+  position: absolute;
+  top: 35%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #ff6f61;
+}
+
+/* Hiện icon khi hover vào li */
+#ul_message li:hover .report_sensitive {
+  display: block;
+}
+
+/* Vị trí icon cho tin nhắn của người khác (bên trái) */
+.message-container .report_sensitive {
+  right: -55px;
+}
+
+/* Vị trí icon cho tin nhắn của mình (bên phải) */
+.right .message-container .report_sensitive {
+  left: -55px;
+  right: auto;
+}
+
+/* -------TRANSLATE--------- */
+.translate-icon {
+  display: none;
+  position: absolute;
+  top: 35%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #28a745;
+}
+
+/* Hiện icon khi hover vào li */
+#ul_message li:hover .translate-icon {
+  display: block;
+}
+
+/* Vị trí icon cho tin nhắn của người khác (bên trái) */
+.message-container .translate-icon {
+  right: -55px;
+}
+
+/* Vị trí icon cho tin nhắn của mình (bên phải) */
+.right .message-container .translate-icon {
+  left: -55px;
+  right: auto;
+}
+
+/* ==================VOICE====================== */
+#btn_call{
+  width: 10%;
+  padding: 12px;
+  background-color: #28a745;
+  color: white;
+  border: 2px solid #28a745;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+#btn_call:hover {
+  background-color: #218838;
+  cursor: pointer;
+}
+
+#btn_end_call{
+  width: 10%;
+  padding: 12px;
+  background-color: red;
+  color: white;
+  border: 2px solid black;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+#btn_end_call:hover{
+  background-color: rgb(179, 47, 47);
+  cursor: pointer;
+}
+

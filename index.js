@@ -37,6 +37,10 @@ io.on("connection", function (client) {
       room = data.room; // Lấy room từ data
       const username = data.username; // Lấy username từ data
       client.join(room);
+
+      // Lưu mapping giữa username và socket ID
+      client.username = username;
+
       await accountModel.updateOne(
         { username: username }, // Sử dụng username thay vì obj.name
         { $addToSet: { rooms: room } }
@@ -51,13 +55,13 @@ io.on("connection", function (client) {
   client.on("message", async function (data) {
     try {
       const obj = JSON.parse(data);
-  
+
       // Lấy thông tin người gửi
       const senderAccount = await accountModel.findOne({ username: obj.name });
       if (!senderAccount) {
         throw new Error("Sender account not found");
       }
-  
+
       // Nhận diện thời gian trong tin nhắn (định dạng HH:MM)
       const timeRegex = /(\d{1,2}:\d{2})/;
       const timeMatch = obj.message.match(timeRegex);
@@ -66,13 +70,13 @@ io.on("connection", function (client) {
         scheduledTime = timeMatch[0]; // Ví dụ: "15:00"
         console.log("Detected scheduled time:", scheduledTime);
       }
-  
+
       // Lấy danh sách từ nhạy cảm trong blacklist
       const blacklistedWords = await sensitiveWordModel.find({
         status: "blacklisted",
       });
       let filteredMessage = obj.message;
-  
+
       // Thay thế từ nhạy cảm bằng dấu *
       blacklistedWords.forEach((wordObj) => {
         const regex = new RegExp(`\\b${wordObj.word}\\b`, "gi");
@@ -81,7 +85,7 @@ io.on("connection", function (client) {
           "*".repeat(wordObj.word.length)
         );
       });
-  
+
       // Dịch tin nhắn
       const roomUsers = await accountModel.find({ rooms: room });
       const senderLang = senderAccount?.language || "en"; // Ngôn ngữ mặc định: tiếng Anh
@@ -111,7 +115,7 @@ io.on("connection", function (client) {
           );
         }
       }
-  
+
       // Lưu tin nhắn vào database và lấy _id
       const savedMessage = await messageModel.create({
         room: room,
@@ -124,7 +128,7 @@ io.on("connection", function (client) {
         timestamp: new Date(),
         translations: translations,
       });
-  
+
       // Thêm thông tin vào obj để gửi về client
       obj._id = savedMessage._id;
       obj.message = filteredMessage;
@@ -132,7 +136,7 @@ io.on("connection", function (client) {
       obj.scheduledTime = savedMessage.scheduledTime;
       obj.timestamp = savedMessage.timestamp; // Gửi timestamp sau khi savedMessage được khởi tạo
       obj.translations = savedMessage.translations;
-  
+
       console.log("Sending to client:", JSON.stringify(obj));
       io.to(room).emit("thread", JSON.stringify(obj));
     } catch (error) {
@@ -157,6 +161,89 @@ io.on("connection", function (client) {
       io.to(room).emit("emotion", data);
     } catch (error) {
       console.error("Error handling emotion:", error);
+    }
+  });
+
+  // === XU LY GOI DIEN VOICE ===
+  // Gửi offer (yêu cầu bắt đầu gọi)
+  client.on("voice-offer", (data) => {
+    const { room, offer, caller, receiver } = JSON.parse(data);
+    console.log(
+      `Received voice-offer: caller=${caller}, receiver=${receiver}, room=${room}`
+    );
+    const receiverSocket = Array.from(io.sockets.sockets.values()).find(
+      (socket) => socket.username === receiver
+    );
+    if (receiverSocket) {
+      console.log(
+        `Sending voice-offer to receiver: receiverSocketId=${receiverSocket.id}`
+      );
+      receiverSocket.emit(
+        "voice-offer",
+        JSON.stringify({ offer, caller, receiver })
+      );
+    } else {
+      console.log(`Receiver not found: receiver=${receiver}`);
+      client.emit(
+        "call-failed",
+        JSON.stringify({ message: "Receiver not found or offline" })
+      );
+    }
+  });
+
+  // Gửi answer (phản hồi chấp nhận cuộc gọi)
+  client.on("voice-answer", (data) => {
+    const { room, answer, receiver, caller } = JSON.parse(data);
+    console.log(
+      `Received voice-answer: caller=${caller}, receiver=${receiver}`
+    );
+    const callerSocket = Array.from(io.sockets.sockets.values()).find(
+      (socket) => socket.username === caller
+    );
+    if (callerSocket) {
+      console.log(`Sending voice-answer to callerSocketId=${callerSocket.id}`);
+      callerSocket.emit("voice-answer", JSON.stringify({ answer, receiver }));
+    }
+  });
+
+  // Gửi ICE candidate
+  client.on("ice-candidate", (data) => {
+    const { room, candidate, receiver } = JSON.parse(data);
+    console.log(`Received ice-candidate for receiver=${receiver}`);
+    const receiverSocket = Array.from(io.sockets.sockets.values()).find(
+      (socket) => socket.username === receiver
+    );
+    if (receiverSocket) {
+      console.log(
+        `Sending ice-candidate to receiverSocketId=${receiverSocket.id}`
+      );
+      receiverSocket.emit("ice-candidate", JSON.stringify({ candidate }));
+    }
+  });
+
+  // Ngắt cuộc gọi
+  client.on("end-call", (data) => {
+    const { room, receiver } = JSON.parse(data);
+    console.log(`Received end-call for receiver=${receiver}`);
+    const receiverSocket = Array.from(io.sockets.sockets.values()).find(
+      (socket) => socket.username === receiver
+    );
+    if (receiverSocket) {
+      console.log(`Sending end-call to receiverSocketId=${receiverSocket.id}`);
+      receiverSocket.emit("end-call", JSON.stringify({}));
+    }
+  });
+
+  // Xử lý từ chối cuộc gọi
+  client.on("reject-call", (data) => {
+    const { room, caller } = JSON.parse(data);
+    console.log(`Received reject-call for caller=${caller}`);
+    const callerSocket = Array.from(io.sockets.sockets.values()).find(
+      (socket) => socket.username === caller
+    );
+    if (callerSocket) {
+      console.log(`Sending reject-call to callerSocketId=${callerSocket.id}`);
+      callerSocket.emit("reject-call", JSON.stringify({ caller }));
     }
   });
 });

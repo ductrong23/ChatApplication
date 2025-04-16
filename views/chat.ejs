@@ -1,7 +1,9 @@
 <!-- GIAO DIEN PHONG CHAT -->
 <title>Chat</title>
 <link rel="stylesheet" href="css/style.css" />
-<link rel="stylesheet" href="css/chat_old.css" />
+<!-- <link rel="stylesheet" href="css/chat_old.css" /> -->
+<link rel="stylesheet" href="css/chat.css" />
+
 <link
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -20,14 +22,10 @@
     <div class="user_greeting">
       <img src="<%= currentUser.avatar %>" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;" />
       <span id="current_user_fullname"><%= currentUser.full_name %></span> <!-- Lấy từ currentUser -->
-      <!-- <select id="language-select" onchange="changeLanguage(this.value)">
-        <option value="en" <%= currentUser.language === 'en' ? 'selected' : '' %>>English</option>
-        <option value="vi" <%= currentUser.language === 'vi' ? 'selected' : '' %>>Tiếng Việt</option>
-      </select> -->
       <button id="btn_logout">Logout</button>
     </div>
 
-    <h3 style="color: white; margin-top: 10%">Your Language</h3>
+    <h3 style="color: white; margin-top: 10%">Your Room Language</h3>
     <select id="language-select" onchange="changeLanguage(this.value)">
       <option value="en" <%= currentUser.language === 'en' ? 'selected' : '' %>>English</option>
       <option value="vi" <%= currentUser.language === 'vi' ? 'selected' : '' %>>Tiếng Việt</option>
@@ -54,6 +52,9 @@
         <img src="<%= friend.avatar %>" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 5px;" />
         <%= friend.full_name %>
         <i class="fa-solid fa-circle" style="color: green; font-size: 10px"></i>
+        <button onclick="startCall('<%= friend.username %>')" style="margin-left: 10px;">
+          <i class="fa-solid fa-phone"></i>
+        </button>
       </p>
     </li>
     <% }) %>
@@ -128,10 +129,17 @@
       <img style="width: 20%; display: none" alt="" id="img_message" />
       <!-- <input style="width: 20%" type="file" id="ip_image" / placeholder="IMAGE"> -->
       <label for="ip_image" class="custom_file_upload">
-       </i> <i class="fa-solid fa-image"></i>
+       </i> <i class="fa-solid fa-image" style="margin: 0 auto"></i>
     </label>
     <input type="file" id="ip_image" />
       <button id="btn_send">Send</button>
+      <!-- Thêm nút gọi voice -->
+  <button id="btn_call" title="Start Voice Call">
+    <i class="fa-solid fa-phone"></i>
+  </button>
+  <button id="btn_end_call" title="End Call" style="display: none;">
+    <i class="fa-solid fa-phone-slash"></i>
+  </button>
     </div>
 
   </div>

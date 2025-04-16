@@ -7,7 +7,6 @@ const btn_send = document.getElementById("btn_send");
 const ul_message = document.getElementById("ul_message");
 const btn_logout = document.getElementById("btn_logout");
 
-
 var socket = io.connect();
 
 // LẤY USERNAME
@@ -215,10 +214,13 @@ socket.on("thread", function (data) {
       : obj.message;
   console.log("Translated message:", translatedMessage);
 
-
   const li = document.createElement("li");
 
-  const time = new Date(obj.timestamp).toLocaleTimeString(); // Dùng timestamp từ server
+  // const time = new Date(obj.timestamp).toLocaleTimeString(); // Dùng timestamp từ server
+  const time = new Date(obj.timestamp).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   li.innerHTML = `
   <div class="message-container">
@@ -303,10 +305,10 @@ function show(e, id) {
     if (e.target.innerHTML.toString().trim().length === 0) {
       e.target.innerHTML = `
         <div class="emotions">
-          <i onclick="choose(event, '${id}', 1)" class="fa-solid fa-heart" style="color: red; border: 3px sloid white"></i>
-          <i onclick="choose(event, '${id}', 2)" class="fa-solid fa-face-laugh-beam" style="color: yellow; border: 3px sloid white "></i>
-          <i onclick="choose(event, '${id}', 3)" class="fa-solid fa-face-sad-tear" style="color: green; border: 3px sloid white"></i>
-          <i onclick="choose(event, '${id}', 4)" class="fa-solid fa-face-rolling-eyes" style="color: orange; border: 3px sloid white"></i>
+          <i onclick="choose(event, '${id}', 1)" class="fa-solid fa-heart" style="color: red; border: 3px sloid black; background: white"></i>
+          <i onclick="choose(event, '${id}', 2)" class="fa-solid fa-face-laugh-beam" style="color: yellow; border: 3px sloid black; background: white "></i>
+          <i onclick="choose(event, '${id}', 3)" class="fa-solid fa-face-sad-tear" style="color: green; border: 3px sloid black; background: white"></i>
+          <i onclick="choose(event, '${id}', 4)" class="fa-solid fa-face-rolling-eyes" style="color: orange; border: 3px sloid black; background: white"></i>
         </div>
       `;
     } else {
@@ -420,7 +422,20 @@ window.startChat = function (friendUsername) {
   console.log("Starting chat with:", { myUsername, friendUsername });
   const room = [myUsername, friendUsername].sort().join("_");
   document.getElementById("room").value = room;
+  localStorage.setItem("callReceiver", friendUsername); // Lưu người nhận
   document.getElementById("btn_join").click();
+};
+
+// SU KIEN GOI VOICE KHI LA BAN BE
+window.startCall = function (friendUsername) {
+  const myUsername = localStorage.getItem("username");
+  const room = [myUsername, friendUsername].sort().join("_");
+  document.getElementById("room").value = room;
+  localStorage.setItem("callReceiver", friendUsername);
+  document.getElementById("btn_join").click();
+  setTimeout(() => {
+    document.getElementById("btn_call").click();
+  }, 500); // Đợi join phòng xong
 };
 
 // SU KIEN BAO CAO TU NGU NHAY CAM
@@ -549,3 +564,293 @@ function showTranslation(messageId, translatedText, originalText) {
   }
 }
 
+// ===================VOICE===================
+
+// WebRTC variables
+let localStream;
+let peerConnection;
+const servers = {
+  iceServers: [
+    { urls: "stun:stun.l.google.com:19302" }, // STUN server miễn phí
+  ],
+};
+
+// DOM elements
+const btnCall = document.getElementById("btn_call");
+const btnEndCall = document.getElementById("btn_end_call");
+let callTimeout;
+
+// Khởi tạo peer connection
+function createPeerConnection() {
+  peerConnection = new RTCPeerConnection(servers);
+
+  peerConnection.onicecandidate = (event) => {
+    if (event.candidate) {
+      console.log(
+        "Sending ICE candidate to receiver:",
+        localStorage.getItem("callReceiver")
+      );
+      socket.emit(
+        "ice-candidate",
+        JSON.stringify({
+          room: ip_room.value,
+          candidate: event.candidate,
+          receiver: localStorage.getItem("callReceiver"),
+        })
+      );
+    }
+  };
+
+  // Xử lý khi nhận được luồng âm thanh từ đối phương
+  peerConnection.ontrack = (event) => {
+    console.log("Received remote audio track");
+    const remoteAudio = new Audio();
+    remoteAudio.srcObject = event.streams[0];
+    remoteAudio.play();
+  };
+
+  // Thêm luồng âm thanh cục bộ
+  localStream.getTracks().forEach((track) => {
+    peerConnection.addTrack(track, localStream);
+  });
+}
+
+// Bắt đầu cuộc gọi
+btnCall.addEventListener("click", async () => {
+  if (!ip_room.value) {
+    alert("Please join a room first!");
+    return;
+  }
+
+  // Giả định chọn receiver từ danh sách bạn bè (cần sửa startChat để lưu receiver)
+  const receiver = localStorage.getItem("callReceiver");
+  if (!receiver) {
+    alert("Please select a friend to call!");
+    return;
+  }
+
+  try {
+    console.log("Starting call to receiver:", receiver);
+    // Lấy luồng âm thanh từ micro
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    // Tạo peer connection
+    createPeerConnection();
+
+    // Tạo offer
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+
+    // Gửi offer tới server
+    socket.emit(
+      "voice-offer",
+      JSON.stringify({
+        room: ip_room.value,
+        offer,
+        caller: localStorage.getItem("username"),
+        receiver, // Thêm receiver
+      })
+    );
+
+    // Hiển thị nút ngắt cuộc gọi
+    btnCall.style.display = "none";
+    btnEndCall.style.display = "inline-block";
+
+    // Thiết lập timeout (ví dụ: 30 giây)
+    callTimeout = setTimeout(() => {
+      console.log("Call timed out");
+      alert("Call timed out: No response from the other user.");
+      socket.emit(
+        "end-call",
+        JSON.stringify({
+          room: ip_room.value,
+          receiver,
+        })
+      );
+      endCall();
+    }, 15000);
+  } catch (error) {
+    console.error("Error starting call:", error);
+    alert("Error starting call: " + error.message);
+    endCall();
+  }
+});
+
+// Xử lý khi nhận offer
+socket.on("voice-offer", async (data) => {
+  console.log("Received voice-offer:", data);
+  const { offer, caller, receiver } = JSON.parse(data);
+  console.log(
+    `Voice-offer details: caller=${caller}, receiver=${receiver}, currentUser=${localStorage.getItem(
+      "username"
+    )}`
+  );
+
+  if (receiver !== localStorage.getItem("username")) {
+    console.log("Ignoring voice-offer: not the intended receiver");
+    return;
+  }
+
+  // Hiển thị alert để xác nhận
+  const acceptCall = confirm(
+    `${caller} is calling you. Do you want to accept the call?`
+  );
+  if (!acceptCall) {
+    // Gửi sự kiện từ chối cuộc gọi
+    console.log("User rejected the call");
+    socket.emit(
+      "reject-call",
+      JSON.stringify({
+        room: ip_room.value,
+        caller,
+      })
+    );
+    return;
+  }
+
+  try {
+    console.log("Accepting call, getting user media");
+    // Lấy luồng âm thanh
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    // Tạo peer connection
+    createPeerConnection();
+
+    // Đặt remote description
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+
+    // Tạo answer
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    console.log("Sending voice-answer to caller:", caller);
+
+    // Gửi answer
+    socket.emit(
+      "voice-answer",
+      JSON.stringify({
+        room: ip_room.value,
+        answer,
+        receiver: localStorage.getItem("username"),
+        caller,
+      })
+    );
+
+    // Hiển thị nút ngắt cuộc gọi
+    btnCall.style.display = "none";
+    btnEndCall.style.display = "inline-block";
+  } catch (error) {
+    console.error("Error handling offer:", error);
+    alert("Error accepting call: " + error.message);
+    endCall();
+  }
+});
+
+// // Xử lý khi nhận answer
+// socket.on("voice-answer", async (data) => {
+//   console.log("Received voice-answer:", data);
+//   const { answer, receiver } = JSON.parse(data);
+//   if (receiver !== localStorage.getItem("username")) {
+//     console.log("Ignoring voice-answer: not the intended receiver");
+//     return;
+//   }
+//   try {
+//     await peerConnection.setRemoteDescription(
+//       new RTCSessionDescription(answer)
+//     );
+//     console.log("Voice-answer processed, call established");
+//     clearTimeout(callTimeout);
+//   } catch (error) {
+//     console.error("Error handling answer:", error);
+//     alert("Error handling answer: " + error.message);
+//     endCall();
+//   }
+// });
+// Xử lý khi nhận answer
+socket.on("voice-answer", async (data) => {
+  console.log("Received voice-answer:", data);
+  const { answer, receiver, caller } = JSON.parse(data);
+  console.log(`Voice-answer details: caller=${caller}, receiver=${receiver}, currentUser=${localStorage.getItem("username")}`);
+  // Không kiểm tra receiver, vì đây là người gọi nhận answer
+  try {
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+    console.log("Voice-answer processed, call established");
+    if (callTimeout) {
+      clearTimeout(callTimeout);
+      callTimeout = null;
+    }
+  } catch (error) {
+    console.error("Error handling answer:", error);
+    alert("Error handling answer: " + error.message);
+    endCall();
+  }
+});
+
+// Xử lý ICE candidate
+socket.on("ice-candidate", async (data) => {
+  console.log("Received ICE candidate:", data);
+  const { candidate } = JSON.parse(data);
+  try {
+    await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+  } catch (error) {
+    console.error("Error handling ICE candidate:", error);
+  }
+});
+
+// Ngắt cuộc gọi
+btnEndCall.addEventListener("click", () => {
+  console.log("User clicked end call");
+  socket.emit(
+    "end-call",
+    JSON.stringify({
+      room: ip_room.value,
+      receiver: localStorage.getItem("callReceiver"),
+    })
+  );
+  endCall();
+});
+
+// Xử lý khi nhận yêu cầu ngắt cuộc gọi
+socket.on("end-call", () => {
+  console.log("Received end-call");
+  endCall();
+});
+
+// Xử lý từ chối cuộc gọi
+socket.on("reject-call", (data) => {
+  console.log("Received reject-call:", data);
+  const { caller } = JSON.parse(data);
+  if (caller === localStorage.getItem("username")) {
+    console.log("Call rejected by the other user");
+    alert("The call was rejected by the other user.");
+    clearTimeout(callTimeout);
+    endCall();
+  }
+});
+
+// Xử lý call-failed
+socket.on("call-failed", (data) => {
+  console.log("Received call-failed:", data);
+  const { message } = JSON.parse(data);
+  alert(message);
+  endCall();
+});
+
+// Hàm ngắt cuộc gọi
+function endCall() {
+  console.log("Ending call");
+  if (peerConnection) {
+    peerConnection.close();
+    peerConnection = null;
+  }
+  if (localStream) {
+    localStream.getTracks().forEach((track) => track.stop());
+    localStream = null;
+  }
+  btnCall.style.display = "inline-block";
+  btnEndCall.style.display = "none";
+  if (callTimeout) {
+    clearTimeout(callTimeout);
+    callTimeout = null;
+  }
+  localStorage.removeItem("callReceiver");
+}

@@ -139,13 +139,16 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background-color: #007bff;
+  background-color: cornflowerblue;
   color: white;
   padding: 10px 15px;
-
+  margin: 0 auto;
+  width: 10%;
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.3s;
+  border: 2px solid cornflowerblue;
+  border-radius: unset;
 }
 
 .custom_file_upload:hover {
@@ -168,12 +171,13 @@ h1 {
 }
 
 .chat-intro {
-  background: linear-gradient(
+  /* background: linear-gradient(
     135deg,
     #1c1e21 0%,
     #2c2e31 100%
-  ); /* Gradient nền */
-  border-radius: 15px;
+  ); Gradient nền */
+  background-color: white;
+  /* border-radius: 15px; */
 
   color: #ffffff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Đổ bóng nhẹ */
@@ -184,6 +188,7 @@ h1 {
   font-size: 28px;
   margin: 0;
   font-family: "Montserrat", sans-serif;
+  color: black;
 }
 
 .intro-header h2 span {
@@ -192,7 +197,8 @@ h1 {
 
 .intro-header .tagline {
   font-size: 16px;
-  color: #b0b0b0;
+  /* color: #b0b0b0; */
+  color: black;
   margin: 5px 0 15px;
 }
 
@@ -200,6 +206,7 @@ h1 {
   font-size: 16px;
   line-height: 1.6;
   margin: 0 0 15px;
+  color: black;
 }
 
 .intro-content strong {
@@ -210,7 +217,7 @@ h1 {
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
-  margin: 20px 0;
+  margin: 50px 0;
 }
 
 .feature-item {
@@ -229,7 +236,8 @@ h1 {
 .feature-item p {
   font-size: 14px;
   margin: 0;
-  color: #d0d0d0;
+  /* color: #d0d0d0; */
+  color: black;
 }
 
 .call-to-action {
