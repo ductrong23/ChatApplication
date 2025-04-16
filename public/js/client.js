@@ -218,6 +218,8 @@ socket.on("thread", function (data) {
 
   const li = document.createElement("li");
 
+  const time = new Date(obj.timestamp).toLocaleTimeString(); // Dùng timestamp từ server
+
   li.innerHTML = `
   <div class="message-container">
     ${
@@ -252,7 +254,9 @@ socket.on("thread", function (data) {
         : ""
     }
     
-    <small class="timestamp">${obj.time}</small>
+    // <small class="timestamp">${obj.time}</small>
+
+    <small class="timestamp">${time}</small>
 
     </span>
    

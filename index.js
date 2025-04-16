@@ -53,10 +53,11 @@ io.on("connection", function (client) {
     try {
       const obj = JSON.parse(data);
       const now = new Date();
-      obj.time =
-        now.getHours().toString().padStart(2, "0") +
-        ":" +
-        now.getMinutes().toString().padStart(2, "0");
+      // obj.time =
+      //   now.getHours().toString().padStart(2, "0") +
+      //   ":" +
+      //   now.getMinutes().toString().padStart(2, "0");
+      obj.timestamp = savedMessage.timestamp; // Gửi timestamp thay vì obj.time
       // console.log("Received message:", obj);
 
       // Nhận diện thời gian trong tin nhắn (định dạng HH:MM)
@@ -141,7 +142,8 @@ io.on("connection", function (client) {
           ? senderAccount.avatar
           : "https://via.placeholder.com/50", // Lưu avatar vào tin nhắn
         scheduledTime: scheduledTime, // Thêm trường scheduledTime
-        timestamp: now, // Lưu thời gian gửi thực tế
+        // timestamp: now, // Lưu thời gian gửi thực tế
+        timestamp: new Date(), // Lưu timestamp
         translations: translations, // Lưu bản dịch
       });
 
