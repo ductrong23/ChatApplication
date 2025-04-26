@@ -89,60 +89,63 @@
     </div>
 
 <!-- GIỚI THIỆU APP CHAT CHUYÊN NGHIỆP -->
-<div id="ul_message" class="chat-intro">
-  <div class="intro-header">
-    <h2>Welcome to <span>CHAT</span></h2>
-    <p class="tagline">Your Ultimate Real-Time Messaging Experience</p>
-  </div>
-  <div class="intro-content">
-    <p>Connect seamlessly with friends and enjoy a modern chat platform designed for convenience and security. With <strong>CHAT</strong>, you can:</p>
-    <div class="features">
-      <div class="feature-item">
-        <i class="fa-solid fa-comments"></i>
-        <p>Chat instantly with real-time messaging</p>
-      </div>
-      <div class="feature-item">
-        <i class="fa-solid fa-image"></i>
-        <p>Share photos effortlessly</p>
-      </div>
-      <div class="feature-item">
-        <i class="fa-solid fa-bell"></i>
-        <p>Schedule reminders within your conversations</p>
-      </div>
-      <div class="feature-item">
-        <i class="fa-solid fa-shield-alt"></i>
-        <p>Report sensitive content for a safe environment</p>
-      </div>
-      <div class="feature-item">
-        <i class="fa-solid fa-language"></i>
-        <p>Translate messages on-demand with a single click</p>
-      </div>
+  <div id="ul_message" class="chat-intro">
+    <div class="intro-header">
+      <h2>Welcome to <span>CHAT</span></h2>
+      <p class="tagline">Your Ultimate Real-Time Messaging Experience</p>
     </div>
-    <p class="call-to-action">Join a room now and start chatting with ease!</p>
+    <div class="intro-content">
+      <p>Connect seamlessly with friends and enjoy a modern chat platform designed for convenience and security. With <strong>CHAT</strong>, you can:</p>
+      <div class="features">
+        <div class="feature-item">
+          <i class="fa-solid fa-comments"></i>
+          <p>Chat instantly with real-time messaging</p>
+        </div>
+        <div class="feature-item">
+          <i class="fa-solid fa-image"></i>
+          <p>Share photos effortlessly</p>
+        </div>
+        <div class="feature-item">
+          <i class="fa-solid fa-bell"></i>
+          <p>Schedule reminders within your conversations</p>
+        </div>
+        <div class="feature-item">
+          <i class="fa-solid fa-shield-alt"></i>
+          <p>Report sensitive content for a safe environment</p>
+        </div>
+        <div class="feature-item">
+          <i class="fa-solid fa-language"></i>
+          <p>Translate messages on-demand with a single click</p>
+        </div>
+        <div class="feature-item">
+          <i class="fa-solid fa-phone"></i>
+          <p>Make crystal-clear voice calls</p>
+        </div>
+      </div>
+      <p class="call-to-action">Join a room now and start chatting with ease!</p>
+    </div>
   </div>
-</div>
     
 
     <!-- GỬI TIN NHẮN - HÌNH ẢNH -->
-    <div class="container_send">
-      <input type="text" id="ip_message" placeholder="Aa..." />
-      <img style="width: 20%; display: none" alt="" id="img_message" />
-      <!-- <input style="width: 20%" type="file" id="ip_image" / placeholder="IMAGE"> -->
-      <label for="ip_image" class="custom_file_upload">
-       </i> <i class="fa-solid fa-image" style="margin: 0 auto"></i>
+  <div class="container_send">
+    <input type="text" id="ip_message" placeholder="Aa..." />
+    <img style="width: 20%; display: none" alt="" id="img_message" />
+    <!-- <input style="width: 20%" type="file" id="ip_image" / placeholder="IMAGE"> -->
+    <label for="ip_image" class="custom_file_upload">
+      </i> <i class="fa-solid fa-image" style="margin: 0 auto"></i>
     </label>
     <input type="file" id="ip_image" />
-      <button id="btn_send">Send</button>
-      <!-- Thêm nút gọi voice -->
-  <button id="btn_call" title="Start Voice Call">
-    <i class="fa-solid fa-phone"></i>
-  </button>
-  <button id="btn_end_call" title="End Call" style="display: none;">
-    <i class="fa-solid fa-phone-slash"></i>
-  </button>
-    </div>
-
-  </div>
+    <button id="btn_send">Send</button>
+    <!-- Thêm nút voice call -->
+    <button id="btn_call" title="Start Voice Call">
+      <i class="fa-solid fa-phone"></i>
+    </button>
+    <!-- Thêm nút end call -->
+    <button id="btn_end_call" title="End Call" style="display: none;">
+      <i class="fa-solid fa-phone-slash"></i>
+    </button>
+    
 </div>
 
 <script src="/socket.io/socket.io.js"></script>

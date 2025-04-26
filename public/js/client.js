@@ -569,6 +569,7 @@ function showTranslation(messageId, translatedText, originalText) {
 // WebRTC variables
 let localStream;
 let peerConnection;
+let callTimeout;
 const servers = {
   iceServers: [
     { urls: "stun:stun.l.google.com:19302" }, // STUN server miễn phí
@@ -578,7 +579,7 @@ const servers = {
 // DOM elements
 const btnCall = document.getElementById("btn_call");
 const btnEndCall = document.getElementById("btn_end_call");
-let callTimeout;
+
 
 // Khởi tạo peer connection
 function createPeerConnection() {
@@ -608,6 +609,7 @@ function createPeerConnection() {
     remoteAudio.srcObject = event.streams[0];
     remoteAudio.play();
   };
+    
 
   // Thêm luồng âm thanh cục bộ
   localStream.getTracks().forEach((track) => {
@@ -745,34 +747,20 @@ socket.on("voice-offer", async (data) => {
   }
 });
 
-// // Xử lý khi nhận answer
-// socket.on("voice-answer", async (data) => {
-//   console.log("Received voice-answer:", data);
-//   const { answer, receiver } = JSON.parse(data);
-//   if (receiver !== localStorage.getItem("username")) {
-//     console.log("Ignoring voice-answer: not the intended receiver");
-//     return;
-//   }
-//   try {
-//     await peerConnection.setRemoteDescription(
-//       new RTCSessionDescription(answer)
-//     );
-//     console.log("Voice-answer processed, call established");
-//     clearTimeout(callTimeout);
-//   } catch (error) {
-//     console.error("Error handling answer:", error);
-//     alert("Error handling answer: " + error.message);
-//     endCall();
-//   }
-// });
 // Xử lý khi nhận answer
 socket.on("voice-answer", async (data) => {
   console.log("Received voice-answer:", data);
   const { answer, receiver, caller } = JSON.parse(data);
-  console.log(`Voice-answer details: caller=${caller}, receiver=${receiver}, currentUser=${localStorage.getItem("username")}`);
+  console.log(
+    `Voice-answer details: caller=${caller}, receiver=${receiver}, currentUser=${localStorage.getItem(
+      "username"
+    )}`
+  );
   // Không kiểm tra receiver, vì đây là người gọi nhận answer
   try {
-    await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+    await peerConnection.setRemoteDescription(
+      new RTCSessionDescription(answer)
+    );
     console.log("Voice-answer processed, call established");
     if (callTimeout) {
       clearTimeout(callTimeout);
@@ -854,3 +842,5 @@ function endCall() {
   }
   localStorage.removeItem("callReceiver");
 }
+
+

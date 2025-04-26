@@ -31,6 +31,12 @@ body {
   font-size: 14px;
 }
 
+.container_join input:focus {
+  border: 1px solid cornflowerblue;
+  outline: none;
+  box-shadow: none;
+}
+
 .container_join button {
   width: 20%;
   padding: 12px;
@@ -60,8 +66,10 @@ body {
   font-size: 14px;
 }
 
-#ip_message :focus {
+#ip_message:focus {
   border: 1px solid cornflowerblue;
+  outline: none;
+  box-shadow: none;
 }
 
 #btn_send {
@@ -395,7 +403,7 @@ h1 {
 }
 
 /* ==================VOICE====================== */
-#btn_call{
+#btn_call {
   width: 10%;
   padding: 12px;
   background-color: #28a745;
@@ -410,7 +418,7 @@ h1 {
   cursor: pointer;
 }
 
-#btn_end_call{
+#btn_end_call {
   width: 10%;
   padding: 12px;
   background-color: red;
@@ -421,8 +429,37 @@ h1 {
   transition: background-color 0.3s ease;
 }
 
-#btn_end_call:hover{
+#btn_end_call:hover {
   background-color: rgb(179, 47, 47);
   cursor: pointer;
 }
 
+/* ==================VIDEO CALL====================== */
+#btn_video_call {
+  background: #28a745;
+  color: white;
+}
+
+#btn_video_call:hover {
+  background: #218838;
+}
+
+.video-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+video {
+  width: 300px;
+  height: 200px;
+  border: 1px solid #ccc;
+  background: #000;
+}
+
+h4 {
+  text-align: center;
+  margin-bottom: 10px;
+}
