@@ -18,7 +18,8 @@ const accountSchema = mongoose.Schema(
     // Anh dai dien
     avatar: {
       type: String, // URL của ảnh đại diện
-      default: "https://via.placeholder.com/50", // Ảnh mặc định nếu không có
+      // default: "https://via.placeholder.com/50", // Ảnh mặc định nếu không có
+      default: "https://hanoidep.vn/wp-content/uploads/2025/11/anh-avatar-hai-huoc-18.jpg",
     },
     // friends la mang chua cac ObjectID cua nhung tai khoan khac (ban be)
     friends: [
